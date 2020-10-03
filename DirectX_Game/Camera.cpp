@@ -2,9 +2,8 @@
 
 void Camera::UpdateViewMatrix(ID3D11DeviceContext* deviceContext)
 {
-	Vector3 upVector = Vector3(0, 1, 0);
-	lookTarget = Vector4(position.x, position.y, 1,0);
-	viewMatrix = XMMatrixLookAtLH(this->position, lookTarget, upVector);
+	lookTarget = Vector3(position.x, position.y, 1);
+	viewMatrix = XMMatrixLookAtLH(this->position, lookTarget, Vector3::Up);
 	viewProj = viewMatrix * projMatrix;
 	D3D11_MAPPED_SUBRESOURCE mappedMemory;
 	HRESULT hr = deviceContext->Map(viewProjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
@@ -21,7 +20,7 @@ Camera::Camera(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 
 	desc.ByteWidth = sizeof(Matrix);
 	device->CreateBuffer(&desc, NULL, &viewProjBuffer);
-	this->position = Vector4(0, 0, -2,0);
+	this->position = Vector3(0, 0, -1);
 
 	projMatrix = DirectX::XMMatrixOrthographicLH(20, 20, 0.1f, 20.0f);
 	this->deviceContext = deviceContext;
@@ -40,7 +39,7 @@ ID3D11Buffer* Camera::GetViewProjBuffer()
 
 void Camera::Move(float x, float y)
 {
-	this->position += Vector4(x, y, 0,0);
+	this->position += Vector3(x, y, 0);
 	UpdateViewMatrix(deviceContext);
 }
 

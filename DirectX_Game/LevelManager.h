@@ -10,7 +10,7 @@ public:
 		float x, y, z;
 	};
 	std::vector<LevelBlock*> level;
-	void AddBlock();
+	void AddBlock(int index);
 	void CreateLevel();
 	void DrawLevel(ID3D11DeviceContext* deviceContext);
 	ShaderClass levelShaders;
@@ -18,4 +18,6 @@ public:
 	LevelManager(Graphics* graphics);
 private:
 	Graphics* graphics;
+	int gridSizeX = 5;
+	int gridSizeY = 5;
 };

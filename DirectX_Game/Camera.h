@@ -12,9 +12,8 @@ public:
 	Camera();
 	Camera(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 private:
-
-	Vector4 position;
-	Vector4 lookTarget = Vector4(0, 0, -1,0);
+	Vector3 position;
+	Vector3 lookTarget;
 	Matrix viewMatrix;
 	Matrix projMatrix;
 	Matrix viewProj;

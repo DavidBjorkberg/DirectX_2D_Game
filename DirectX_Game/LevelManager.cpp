@@ -1,20 +1,25 @@
 #include "LevelManager.h"
 
-void LevelManager::AddBlock()
+void LevelManager::AddBlock(int index)
 {
-	this->level.push_back(graphics->CreateLevelBlock());
+	this->level.push_back(graphics->CreateLevelBlock(index, gridSizeX, gridSizeY));
 }
 
 void LevelManager::CreateLevel()
 {
-	AddBlock();
+	AddBlock(0);
+	AddBlock(1);
+	AddBlock(8);
+	AddBlock(14);
+	AddBlock(16);
+
 }
 
 void LevelManager::DrawLevel(ID3D11DeviceContext* deviceContext)
 {
 	for (int i = 0; i < level.size(); i++)
 	{
-		graphics->DrawBlock(level[i]->GetVertexBuffer(),&levelShaders);
+		graphics->DrawBlock(level[i]->GetVertexBuffer(), &levelShaders);
 	}
 }
 

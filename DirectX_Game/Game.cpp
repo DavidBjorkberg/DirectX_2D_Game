@@ -4,7 +4,7 @@ void Game::Initialize(HWND handle)
 {
 	graphics = Graphics(handle);
 	levelManager = LevelManager(&graphics);
-	levelManager.AddBlock();
+	levelManager.CreateLevel();
 	keyboard = std::make_unique<DirectX::Keyboard>();
 }
 

@@ -29,6 +29,9 @@ bool Graphics::Init()
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	deviceContext->RSSetViewports(1, &vp);
+
+	CreateBlockIndexBuffer();
+
 	return true;
 }
 
@@ -45,6 +48,27 @@ Graphics::Graphics()
 void Graphics::MoveCamera(float x, float y)
 {
 	camera.Move(x, y);
+}
+void Graphics::CreateBlockIndexBuffer()
+{
+	DWORD indices[] = {
+	0,  1,  2,
+	0,  3,  1,
+	};
+
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
+
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * 6;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+
+	indexData.pSysMem = indices;
+	device->CreateBuffer(&indexBufferDesc, &indexData, &blockIndexBuffer);
 }
 HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 {
@@ -79,17 +103,21 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-LevelBlock* Graphics::CreateLevelBlock()
+LevelBlock* Graphics::CreateLevelBlock(int index, int gridSizeX, int gridSizeY)
 {
+	int cellSize = 1;
+	int row = floor((float)index / (float)gridSizeY);
+	int column = index % gridSizeX;
 	LevelBlock* newBlock = new LevelBlock();
-	LevelBlockVertex vertices[6] =
+	//Top-left: -10.2f, 12.7f
+	Vector3 topLeft = Vector3(-10.2f, 10.2f, 0);
+	LevelBlockVertex vertices[4] =
 	{
-		1.0f, 1.0f, 1.0f,	//v0 pos
-
-		1.0f, 0.0f, 1.0f,	//v2
-
-		0.0f,0.0f, 1.0f, //v1
-	};
+		topLeft + Vector3(cellSize * column, -cellSize * row,0),
+		topLeft + Vector3(cellSize * column + cellSize, -cellSize * row - cellSize,0),
+		topLeft + Vector3(cellSize * column,-cellSize * row - cellSize,0),
+		topLeft + Vector3(cellSize * column + cellSize, -cellSize * row,0)
+	};		
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
@@ -99,10 +127,8 @@ LevelBlock* Graphics::CreateLevelBlock()
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 
-	device->Release();
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = vertices;
-	//ID3D11Buffer* vertexBuffer = newBlock->GetVertexBuffer();
 	device->CreateBuffer(&bufferDesc, &data, &newBlock->vertexBuffer);
 	return newBlock;
 }
@@ -125,6 +151,7 @@ void Graphics::DrawBlock(ID3D11Buffer* vertexBuffer, ShaderClass* shaders)
 	UINT32 vertexSize = sizeof(LevelBlockVertex);
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetIndexBuffer(blockIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	deviceContext->Draw(3, 0);
+	deviceContext->DrawIndexed(6, 0,0);
 }
