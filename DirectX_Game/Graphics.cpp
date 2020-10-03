@@ -29,17 +29,22 @@ bool Graphics::Init()
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	deviceContext->RSSetViewports(1, &vp);
-
 	return true;
 }
 
 Graphics::Graphics(HWND handle)
 {
 	this->handle = handle;
+	Init();
+	camera = Camera(device, deviceContext);
 }
 
 Graphics::Graphics()
 {
+}
+void Graphics::MoveCamera(float x, float y)
+{
+	camera.Move(x, y);
 }
 HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 {
@@ -79,11 +84,11 @@ LevelBlock* Graphics::CreateLevelBlock()
 	LevelBlock* newBlock = new LevelBlock();
 	LevelBlockVertex vertices[6] =
 	{
-		0.0f, 1.0f, 0.0f,	//v0 pos
+		1.0f, 1.0f, 1.0f,	//v0 pos
 
-		0.45f, -0.0f, 0.0f,	//v2
+		1.0f, 0.0f, 1.0f,	//v2
 
-		-0.45f, -0.0f, 0.0f, //v1
+		0.0f,0.0f, 1.0f, //v1
 	};
 
 	D3D11_BUFFER_DESC bufferDesc;
@@ -102,7 +107,7 @@ LevelBlock* Graphics::CreateLevelBlock()
 	return newBlock;
 }
 
-void Graphics::DrawBlock(ID3D11Buffer* vertexBuffer,ShaderClass* shaders)
+void Graphics::DrawBlock(ID3D11Buffer* vertexBuffer, ShaderClass* shaders)
 {
 	deviceContext->VSSetShader(shaders->vs.GetShader(), nullptr, 0);
 	deviceContext->GSSetShader(nullptr, nullptr, 0);
@@ -110,8 +115,10 @@ void Graphics::DrawBlock(ID3D11Buffer* vertexBuffer,ShaderClass* shaders)
 	deviceContext->DSSetShader(nullptr, nullptr, 0);
 	deviceContext->PSSetShader(shaders->ps.GetShader(), nullptr, 0);
 
-	deviceContext->IASetInputLayout(shaders->vs.GetInputLayout());
+	ID3D11Buffer* viewProjBuffer = camera.GetViewProjBuffer();
+	deviceContext->VSSetConstantBuffers(0, 1, &viewProjBuffer);
 
+	deviceContext->IASetInputLayout(shaders->vs.GetInputLayout());
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	UINT32 offset = 0;
