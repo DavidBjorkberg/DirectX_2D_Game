@@ -4,19 +4,51 @@
 
 void LevelManager::AddBlock(int index, int width, int height)
 {
-	this->level.push_back(graphics->CreateLevelBlock(index, width, height, gridSizeX, gridSizeY));
-}
+	Vector3 topLeftOfWindow = Vector3(-10.2f, 10.2f, 0);
+	int row = floor((float)index / (float)gridSizeY);
+	int column = index % gridSizeX;
 
-void LevelManager::CreateLevel()
-{
-}
-
-void LevelManager::DrawLevel(ID3D11DeviceContext* deviceContext)
-{
-	for (size_t i = 0; i < level.size(); i++)
+	Vector3 bottomLeftOfBlock = topLeftOfWindow + Vector3(column, -row -height, 0);
+	Graphics::LevelBlockVertex vertices[4] =
 	{
-		graphics->DrawBlock(level[i]->GetVertexBuffer(), &levelBlockShaders);
-	}
+		bottomLeftOfBlock + Vector3(0,height,0),
+		bottomLeftOfBlock + Vector3(width,0,0),
+		bottomLeftOfBlock,
+		bottomLeftOfBlock + Vector3(width,height,0)
+	};
+
+	LevelBlock* newBlock = new LevelBlock(bottomLeftOfBlock, width, height);
+	this->level.push_back(newBlock);
+
+	vector<ID3D11Buffer*> vsConstantBuffers;
+	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
+
+	graphics->CreateDrawable(vertices,sizeof(vertices), levelBlockShaders, newBlock->vertexBuffer
+		, sizeof(Graphics::LevelBlockVertex)
+		, blockIndexBuffer, vsConstantBuffers);
+
+	this->collisionHandler->AddCollider(&level[level.size() - 1]->collider);
+}
+void LevelManager::CreateBlockIndexBuffer()
+{
+	DWORD indices[] = {
+	0,  1,  2,
+	0,  3,  1,
+	};
+
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
+
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * 6;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+
+	indexData.pSysMem = indices;
+	graphics->device->CreateBuffer(&indexBufferDesc, &indexData, &blockIndexBuffer);
 }
 
 void LevelManager::ReadLevel(const char* fileName)
@@ -52,7 +84,7 @@ LevelManager::LevelManager()
 {
 }
 
-LevelManager::LevelManager(Graphics* graphics)
+LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandler)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
@@ -60,9 +92,12 @@ LevelManager::LevelManager(Graphics* graphics)
 		//{"COLOR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
 	};
 	UINT numElements = ARRAYSIZE(inputDesc);
-	levelBlockShaders.CreatePS(graphics->device, L"LevelBlockPixel.hlsl");
-	levelBlockShaders.CreateVS(graphics->device, L"LevelBlockVertex.hlsl", inputDesc, numElements);
+	levelBlockShaders = new ShaderClass();
+	levelBlockShaders->CreatePS(graphics->device, L"LevelBlockPixel.hlsl");
+	levelBlockShaders->CreateVS(graphics->device, L"LevelBlockVertex.hlsl", inputDesc, numElements);
 	this->graphics = graphics;
+	this->collisionHandler = collisionHandler;
+	CreateBlockIndexBuffer();
 	ReadLevel("Level.png");
 }
 

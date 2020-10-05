@@ -39,6 +39,15 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders.h">
@@ -62,12 +71,27 @@
     <ClInclude Include="stb_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="LevelBlockVertex.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="LevelBlockPixel.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="PlayerVertex.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="PlayerPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

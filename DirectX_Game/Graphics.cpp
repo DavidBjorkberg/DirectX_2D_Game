@@ -30,7 +30,6 @@ bool Graphics::Init()
 	vp.TopLeftY = 0;
 	deviceContext->RSSetViewports(1, &vp);
 
-	CreateBlockIndexBuffer();
 
 	return true;
 }
@@ -48,27 +47,6 @@ Graphics::Graphics()
 void Graphics::MoveCamera(float x, float y)
 {
 	camera.Move(x, y);
-}
-void Graphics::CreateBlockIndexBuffer()
-{
-	DWORD indices[] = {
-	0,  1,  2,
-	0,  3,  1,
-	};
-
-	D3D11_BUFFER_DESC indexBufferDesc;
-	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
-
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(DWORD) * 6;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indexData;
-
-	indexData.pSysMem = indices;
-	device->CreateBuffer(&indexBufferDesc, &indexData, &blockIndexBuffer);
 }
 HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 {
@@ -103,55 +81,60 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-LevelBlock* Graphics::CreateLevelBlock(int index, int width, int height, int gridSizeX, int gridSizeY)
+void Graphics::CreateDrawable(LevelBlockVertex vertices[],UINT verticesSize, ShaderClass* shaders
+	, ID3D11Buffer* vertexBuffer,UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
+	, vector<ID3D11Buffer*> psConstantBuffers, vector<ID3D11ShaderResourceView*> psResourceViews)
 {
-	int cellSize = 1;
-	int row = floor((float)index / (float)gridSizeY);
-	int column = index % gridSizeX;
-	LevelBlock* newBlock = new LevelBlock();
-
-	Vector3 topLeft = Vector3(-10.2f, 10.2f, 0);
-	LevelBlockVertex vertices[4] =
-	{
-		topLeft + Vector3(cellSize * column, -cellSize * row,0), //Top left
-		topLeft + Vector3(cellSize * column + cellSize * width, -cellSize * row - cellSize * height,0), //bottom right
-		topLeft + Vector3(cellSize * column, -cellSize * row - cellSize * height,0), //Bottom left
-		topLeft + Vector3(cellSize * column + cellSize * width, -cellSize * row,0) //top right
-	};
+	DrawableStruct* drawable = new DrawableStruct();
+	drawable->shaders = shaders;
+	drawable->vertexSize = vertexSize;
+	drawable->indexBuffer = indexBuffer;
+	drawable->vsConstantBuffers = vsConstantBuffers;
+	drawable->psConstantBuffers = psConstantBuffers;
+	drawable->psResourceViews = psResourceViews;
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(vertices);
+	bufferDesc.ByteWidth = verticesSize;
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = vertices;
-	device->CreateBuffer(&bufferDesc, &data, &newBlock->vertexBuffer);
-	return newBlock;
+	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
+	drawable->vertexBuffer = vertexBuffer;
+
+	drawables.push_back(drawable);
 }
 
-void Graphics::DrawBlock(ID3D11Buffer* vertexBuffer, ShaderClass* shaders)
+void Graphics::Draw()
 {
-	deviceContext->VSSetShader(shaders->vs.GetShader(), nullptr, 0);
-	deviceContext->GSSetShader(nullptr, nullptr, 0);
-	deviceContext->HSSetShader(nullptr, nullptr, 0);
-	deviceContext->DSSetShader(nullptr, nullptr, 0);
-	deviceContext->PSSetShader(shaders->ps.GetShader(), nullptr, 0);
+	for (int i = 0; i < drawables.size(); i++)
+	{
+		deviceContext->VSSetShader(drawables[i]->shaders->vs.GetShader(), nullptr, 0);
+		deviceContext->PSSetShader(drawables[i]->shaders->ps.GetShader(), nullptr, 0);
 
-	ID3D11Buffer* viewProjBuffer = camera.GetViewProjBuffer();
-	deviceContext->VSSetConstantBuffers(0, 1, &viewProjBuffer);
+		deviceContext->IASetInputLayout(drawables[i]->shaders->vs.GetInputLayout());
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	deviceContext->IASetInputLayout(shaders->vs.GetInputLayout());
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		for (int j = 0; j < drawables[i]->vsConstantBuffers.size(); j++)
+		{
+			deviceContext->VSSetConstantBuffers(j, 1, &drawables[i]->vsConstantBuffers[j]);
+		}
+		for (int j = 0; j < drawables[i]->psConstantBuffers.size(); j++)
+		{
+			deviceContext->PSSetConstantBuffers(j, 1, &drawables[i]->psConstantBuffers[j]);
+		}
+		for (int j = 0; j < drawables[i]->psResourceViews.size(); j++)
+		{
+			deviceContext->PSSetShaderResources(j, 1, &drawables[i]->psResourceViews[j]);
+		}
+		UINT32 offset = 0;
+		deviceContext->IASetVertexBuffers(0, 1, &drawables[i]->vertexBuffer, &drawables[i]->vertexSize, &offset);
+		deviceContext->IASetIndexBuffer(drawables[i]->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	UINT32 offset = 0;
-	UINT32 vertexSize = sizeof(LevelBlockVertex);
-
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
-	deviceContext->IASetIndexBuffer(blockIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	deviceContext->DrawIndexed(6, 0, 0);
+		deviceContext->DrawIndexed(6, 0, 0);
+	}
 }

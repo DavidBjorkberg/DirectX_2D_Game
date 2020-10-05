@@ -103,8 +103,4 @@ ID3D11PixelShader* PixelShader::GetShader()
 	return this->shader;
 }
 
-ID3D10Blob* PixelShader::GetBuffer()
-{
-	return this->buffer;
-}
 

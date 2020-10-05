@@ -4,7 +4,9 @@ LevelBlock::LevelBlock()
 {
 }
 
-ID3D11Buffer* LevelBlock::GetVertexBuffer()
+LevelBlock::LevelBlock(Vector3 pos, float width, float height)
 {
-	return vertexBuffer;
+	this->position = pos;
+	this->collider = BoxCollider(pos, width, height);
 }
+

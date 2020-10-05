@@ -20,7 +20,6 @@ class PixelShader
 public:
 	bool Initialize(ID3D11Device* device, LPCWSTR shaderpath);
 	ID3D11PixelShader* GetShader();
-	ID3D10Blob* GetBuffer();
 private:
 	ID3D11PixelShader* shader;
 	ID3D10Blob* buffer;

@@ -30,7 +30,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 HWND hwnd = NULL;
 
-Game game;
+
 float deltaTime = 0;
 
 
@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	MSG msg = { 0 };
 	HWND wndHandle = InitWindow(hInstance);
-
+	Game game = Game(&deltaTime);
 	if (wndHandle)
 	{
 		ShowWindow(wndHandle, nCmdShow);

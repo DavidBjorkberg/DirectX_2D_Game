@@ -3,9 +3,9 @@
 void Game::Initialize(HWND handle)
 {
 	graphics = Graphics(handle);
-	levelManager = LevelManager(&graphics);
-	levelManager.CreateLevel();
+	levelManager = LevelManager(&graphics, &collisionHandler);
 	keyboard = std::make_unique<DirectX::Keyboard>();
+	player = Player(Vector3(-2.0f,2.0f, 0),&graphics);
 }
 
 void Game::Update()
@@ -13,7 +13,7 @@ void Game::Update()
 	HandleInput();
 	float clearColor[4] = { 0,0,1,1 };
 	graphics.deviceContext->ClearRenderTargetView(graphics.renderTargetView, clearColor);
-	DrawScene();
+	graphics.Draw();
 	graphics.swapChain->Present(0, 0);
 }
 
@@ -46,7 +46,11 @@ Game::Game()
 {
 }
 
+Game::Game(float* deltaTime)
+{
+	this->deltaTime = deltaTime;
+}
+
 void Game::DrawScene()
 {
-	levelManager.DrawLevel(graphics.deviceContext);
 }
