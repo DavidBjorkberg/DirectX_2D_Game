@@ -156,6 +156,7 @@
     <ClInclude Include="LevelBlock.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="LevelBlockPixel.hlsl">

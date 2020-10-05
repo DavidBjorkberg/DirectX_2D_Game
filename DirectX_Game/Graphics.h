@@ -12,7 +12,7 @@ public:
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	bool Init();
 	HRESULT CreateDirect3DContext(HWND wndHandle);
-	LevelBlock* CreateLevelBlock(int index, int gridSizeX, int gridSizeY);
+	LevelBlock* CreateLevelBlock(int index, int width, int height, int gridSizeX, int gridSizeY);
 	void DrawBlock(ID3D11Buffer* vertexBuffer,ShaderClass* shaders);
 	Graphics(HWND handle);
 	Graphics();

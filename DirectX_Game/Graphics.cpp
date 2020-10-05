@@ -103,21 +103,21 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-LevelBlock* Graphics::CreateLevelBlock(int index, int gridSizeX, int gridSizeY)
+LevelBlock* Graphics::CreateLevelBlock(int index, int width, int height, int gridSizeX, int gridSizeY)
 {
 	int cellSize = 1;
 	int row = floor((float)index / (float)gridSizeY);
 	int column = index % gridSizeX;
 	LevelBlock* newBlock = new LevelBlock();
-	//Top-left: -10.2f, 12.7f
+
 	Vector3 topLeft = Vector3(-10.2f, 10.2f, 0);
 	LevelBlockVertex vertices[4] =
 	{
-		topLeft + Vector3(cellSize * column, -cellSize * row,0),
-		topLeft + Vector3(cellSize * column + cellSize, -cellSize * row - cellSize,0),
-		topLeft + Vector3(cellSize * column,-cellSize * row - cellSize,0),
-		topLeft + Vector3(cellSize * column + cellSize, -cellSize * row,0)
-	};		
+		topLeft + Vector3(cellSize * column, -cellSize * row,0), //Top left
+		topLeft + Vector3(cellSize * column + cellSize * width, -cellSize * row - cellSize * height,0), //bottom right
+		topLeft + Vector3(cellSize * column, -cellSize * row - cellSize * height,0), //Bottom left
+		topLeft + Vector3(cellSize * column + cellSize * width, -cellSize * row,0) //top right
+	};
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
@@ -153,5 +153,5 @@ void Graphics::DrawBlock(ID3D11Buffer* vertexBuffer, ShaderClass* shaders)
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
 	deviceContext->IASetIndexBuffer(blockIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	deviceContext->DrawIndexed(6, 0,0);
+	deviceContext->DrawIndexed(6, 0, 0);
 }
