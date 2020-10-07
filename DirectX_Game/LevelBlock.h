@@ -9,7 +9,7 @@ public:
 	LevelBlock();
 	LevelBlock(Vector3 pos, float width, float height);
 	ID3D11Buffer* vertexBuffer;
-	BoxCollider collider;
+	BoxCollider* collider;
 private:
 	Vector3 position;
 };

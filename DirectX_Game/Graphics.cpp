@@ -38,7 +38,9 @@ Graphics::Graphics(HWND handle)
 {
 	this->handle = handle;
 	Init();
-	camera = Camera(device, deviceContext);
+	camera = Camera(deviceContext);
+	CreateConstantBuffer(&camera.viewProjBuffer, sizeof(Matrix));
+	camera.Init();
 }
 
 Graphics::Graphics()
@@ -137,4 +139,15 @@ void Graphics::Draw()
 
 		deviceContext->DrawIndexed(6, 0, 0);
 	}
+}
+void Graphics::CreateConstantBuffer(ID3D11Buffer** buffer, UINT size)
+{
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	desc.ByteWidth = size;
+	device->CreateBuffer(&desc, NULL, buffer);
 }

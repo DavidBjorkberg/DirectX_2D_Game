@@ -33,6 +33,7 @@ public:
 		, vector<ID3D11Buffer*> psConstantBuffers = vector<ID3D11Buffer*>(), vector<ID3D11ShaderResourceView*> psResourceViews = vector<ID3D11ShaderResourceView*>());
 	void Draw();
 	void MoveCamera(float x, float y);
+	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size);
 	Graphics(HWND handle);
 	Graphics();
 private:

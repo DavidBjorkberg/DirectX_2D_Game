@@ -5,7 +5,7 @@
 void LevelManager::AddBlock(int index, int width, int height)
 {
 	Vector3 topLeftOfWindow = Vector3(-10.2f, 10.2f, 0);
-	int row = floor((float)index / (float)gridSizeY);
+	int row = floor((float)index / (float)gridSizeX);
 	int column = index % gridSizeX;
 
 	Vector3 bottomLeftOfBlock = topLeftOfWindow + Vector3(column, -row -height, 0);
@@ -27,7 +27,7 @@ void LevelManager::AddBlock(int index, int width, int height)
 		, sizeof(Graphics::LevelBlockVertex)
 		, blockIndexBuffer, vsConstantBuffers);
 
-	this->collisionHandler->AddCollider(&level[level.size() - 1]->collider);
+	this->collisionHandler->AddCollider(level[level.size() - 1]->collider);
 }
 void LevelManager::CreateBlockIndexBuffer()
 {
