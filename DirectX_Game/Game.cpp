@@ -50,6 +50,11 @@ Game::Game(float* deltaTime)
 	this->deltaTime = deltaTime;
 }
 
+Game::~Game()
+{
+	keyboard.release();
+}
+
 void Game::DrawScene()
 {
 }

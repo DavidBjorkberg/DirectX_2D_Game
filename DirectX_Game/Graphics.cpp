@@ -46,6 +46,9 @@ Graphics::Graphics(HWND handle)
 Graphics::Graphics()
 {
 }
+Graphics::~Graphics()
+{
+}
 void Graphics::MoveCamera(float x, float y)
 {
 	camera.Move(x, y);

@@ -20,7 +20,7 @@ bool BoxCollider::IsColliding(BoxCollider* other)
 	return xCollision && yCollision;
 }
 
-bool BoxCollider::IsCollidingNextFrame(BoxCollider* other, Vector3 moveVec)
+bool BoxCollider::IsCollidingAfterMove(BoxCollider* other, Vector3 moveVec)
 {
 	Vector3 nextFramePos = bottomLeftPos + moveVec;
 	bool xCollision = nextFramePos.x < other->bottomLeftPos.x + other->width

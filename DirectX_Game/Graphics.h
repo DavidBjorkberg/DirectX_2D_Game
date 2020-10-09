@@ -10,6 +10,7 @@ public:
 	struct LevelBlockVertex
 	{
 		Vector3 pos;
+		Vector2 UV;
 	};
 	struct DrawableStruct
 	{
@@ -36,6 +37,7 @@ public:
 	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size);
 	Graphics(HWND handle);
 	Graphics();
+	~Graphics();
 private:
 	HRESULT CreateDirect3DContext(HWND wndHandle);
 	HWND handle;

@@ -15,9 +15,12 @@ public:
 	Player(Vector3 pos,Graphics* graphics, CollisionHandler* collisionHandler);
 	Player();
 private:
-	float gravity = 2;
-	float movementSpeed = 2;
-	Vector3 velocity;
+	enum class VelocityMode
+	{
+		Instant,
+		Force
+	};
+	Vector3 curVelocity;
 	CollisionHandler* collisionHandler;
 	BoxCollider* collider;
 	ID3D11Buffer* indexBuffer;
@@ -27,8 +30,20 @@ private:
 	Vector3 previousTranslation;
 	Matrix moveMatrix = Matrix::Identity;
 	Vector3 position;
+	bool canJump = true;
+	float gravity = 6;
 	float width = 1;
 	float height = 1;
-	void Move(float deltaTime);
-	void CalculateVelocity(DirectX::Keyboard::State kb, float deltaTime);
+	float jumpForce = 9;
+	float maxXVelocity = 5;
+	float acceleration =10;
+	float deltaTime;
+	void Move();
+	void Jump();
+	void CheckNextFrameCollision();
+	void AddVelocity(Vector3 newVelocity, VelocityMode velocityMode);
+	void ApplyGravity(DirectX::Keyboard::State kb);
+	void GetInput(DirectX::Keyboard::State kb);
+	bool IsGrounded();
+	void ClampVelocity();
 };

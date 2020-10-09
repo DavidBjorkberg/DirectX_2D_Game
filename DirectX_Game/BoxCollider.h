@@ -8,7 +8,7 @@ public:
 	BoxCollider();
 	BoxCollider(Vector3 pos, float width, float height);
 	bool IsColliding(BoxCollider* other);
-	bool IsCollidingNextFrame(BoxCollider* other,Vector3 moveVec);
+	bool IsCollidingAfterMove(BoxCollider* other,Vector3 moveVec);
 	void Move(Vector3 moveVec);
 	Vector3 bottomLeftPos;
 private:

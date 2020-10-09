@@ -37,9 +37,10 @@ float deltaTime = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	MSG msg = { 0 };
 	HWND wndHandle = InitWindow(hInstance);
-	Game game = Game(&deltaTime);
+	Game game(&deltaTime);
 	if (wndHandle)
 	{
 		ShowWindow(wndHandle, nCmdShow);
@@ -73,8 +74,7 @@ HWND InitWindow(HINSTANCE hInstance)
 	wcex.lpfnWndProc = WndProc;
 	wcex.hInstance = hInstance;
 	wcex.lpszClassName = L"DirectX Renderer";
-	if (!RegisterClassEx(&wcex))
-		return false;
+	RegisterClassEx(&wcex);
 
 	RECT rc = { 0, 0, 640, 480 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);

@@ -1,7 +1,7 @@
 struct VS_IN
 {
 	float3 position : SV_POSITION;
-	//float3 color : COLOR;
+	float2 uv : UV;
 };
 
 struct VS_OUT

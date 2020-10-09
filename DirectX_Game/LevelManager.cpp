@@ -7,14 +7,18 @@ void LevelManager::AddBlock(int index, int width, int height)
 	Vector3 topLeftOfWindow = Vector3(-10.2f, 10.2f, 0);
 	int row = floor((float)index / (float)gridSizeX);
 	int column = index % gridSizeX;
-
+		
 	Vector3 bottomLeftOfBlock = topLeftOfWindow + Vector3(column, -row -height, 0);
 	Graphics::LevelBlockVertex vertices[4] =
 	{
 		bottomLeftOfBlock + Vector3(0,height,0),
+		Vector2(0, 0),
 		bottomLeftOfBlock + Vector3(width,0,0),
+		Vector2(1, 1),
 		bottomLeftOfBlock,
-		bottomLeftOfBlock + Vector3(width,height,0)
+		Vector2(0, 1),
+		bottomLeftOfBlock + Vector3(width,height,0),
+		Vector2(1, 0)
 	};
 
 	LevelBlock* newBlock = new LevelBlock(bottomLeftOfBlock, width, height);

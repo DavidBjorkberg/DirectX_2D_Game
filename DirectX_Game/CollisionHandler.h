@@ -6,7 +6,7 @@ class CollisionHandler
 public:
 	void AddCollider(BoxCollider* collider);
 	bool isColliding(BoxCollider* collider);
-	BoxCollider* isCollidingNextFrame(BoxCollider* collider, Vector3 moveVec);
+	BoxCollider* isCollidingAfterMove(BoxCollider* collider, Vector3 moveVec);
 	CollisionHandler();
 private:
 	std::vector<BoxCollider*> colliders;

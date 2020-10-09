@@ -13,6 +13,7 @@ public:
 	std::unique_ptr<DirectX::Keyboard> keyboard;
 	Game();
 	Game(float* deltaTime);
+	~Game();
 private:
 	Player player;
 	float* deltaTime;
