@@ -22,17 +22,13 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	this->position = pos;
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
-	Graphics::LevelBlockVertex vertices[4] =
-	{
-		pos + Vector3(0,height,0),
-		Vector2(0,0),
-		pos + Vector3(width,0,0),
-		Vector2(1,1),
-		pos,
-		Vector2(0,1),
-		pos + Vector3(width,height,0),
-		Vector2(1,0)
-	};
+	texture.Initialize(graphics->device, graphics->deviceContext,"Player.png");
+	std::vector<Graphics::LevelBlockVertex> vertices;
+	vertices.push_back({ pos + Vector3(0,height,0)		,Vector2(0,0) });
+	vertices.push_back({ pos + Vector3(width,0,0)		,Vector2(1,1) });
+	vertices.push_back({ pos							,Vector2(0,1) });
+	vertices.push_back({ pos + Vector3(width,height,0)	,Vector2(1,0) });
+
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
 		{"SV_POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
@@ -53,10 +49,14 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	vector<ID3D11Buffer*> vsConstantBuffers;
 	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
 	vsConstantBuffers.push_back(moveBuffer);
+	vector<ID3D11ShaderResourceView*> psResourceViews;
+	psResourceViews.push_back(texture.GetResourceView());
+
 	collider = new BoxCollider(pos, width, height);
 	collisionHandler->AddCollider(collider);
+	
 	CreateIndexBuffer(graphics);
-	graphics->CreateDrawable(vertices, sizeof(vertices), shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), indexBuffer, vsConstantBuffers);
+	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), indexBuffer, vsConstantBuffers, psResourceViews);
 }
 void Player::CreateIndexBuffer(Graphics* graphics)
 {
@@ -98,7 +98,7 @@ void Player::Move()
 }
 void Player::Jump()
 {
-	AddVelocity(Vector3(curVelocity.x, jumpForce, 0), VelocityMode::Force);
+	AddVelocity(Vector3(curVelocity.x, jumpForce, 0), VelocityMode::Set);
 }
 void Player::CheckNextFrameCollision()
 {
@@ -122,11 +122,11 @@ void Player::CheckNextFrameCollision()
 
 void Player::AddVelocity(Vector3 addVelocity, VelocityMode velocityMode)
 {
-	if (velocityMode == VelocityMode::Instant)
+	if (velocityMode == VelocityMode::Add)
 	{
 		curVelocity += addVelocity;
 	}
-	else if (velocityMode == VelocityMode::Force)
+	else if (velocityMode == VelocityMode::Set)
 	{
 		curVelocity = addVelocity;
 	} 
@@ -136,31 +136,31 @@ void Player::ApplyGravity(DirectX::Keyboard::State kb)
 	//For high jump
 	if (curVelocity.y < 0)
 	{
-		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Instant);
+		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Add);
 	}
 	else if (curVelocity.y > 0 && !kb.Space)
 	{
-		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Instant);
+		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Add);
 	}
 	//Regular gravity 
-	AddVelocity(Vector3::Down * gravity * deltaTime, VelocityMode::Instant);
+	AddVelocity(Vector3::Down * gravity * deltaTime, VelocityMode::Add);
 }
 
 void Player::GetInput(DirectX::Keyboard::State kb)
 {
 	if (kb.A)
 	{
-		AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Instant);
+		AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Add);
 	}
 	else if (kb.D)
 	{
-		AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Instant);
+		AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Add);
 	}
 	else if(IsGrounded())
 	{
 		if (curVelocity.x > 0)
 		{
-			AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Instant);
+			AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Add);
 			if (curVelocity.x < 0)
 			{
 				curVelocity.x = 0;
@@ -168,7 +168,7 @@ void Player::GetInput(DirectX::Keyboard::State kb)
 		}
 		else
 		{
-			AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Instant);
+			AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Add);
 			if (curVelocity.x > 0)
 			{
 				curVelocity.x = 0;

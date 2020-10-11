@@ -9,7 +9,6 @@ class Game
 public:
 	void Initialize(HWND handle);
 	void Update();
-	void HandleInput();
 	std::unique_ptr<DirectX::Keyboard> keyboard;
 	Game();
 	Game(float* deltaTime);
@@ -17,8 +16,12 @@ public:
 private:
 	Player player;
 	float* deltaTime;
+	Texture backgroundTexture;
+	ShaderClass backgroundShaders;
+	ID3D11Buffer* bgVertexBuffer;
 	LevelManager levelManager;
 	Graphics graphics;
 	CollisionHandler collisionHandler;
 	void DrawScene();
+	void CreateBackground();
 };

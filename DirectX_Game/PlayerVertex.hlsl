@@ -7,7 +7,7 @@ struct VS_IN
 struct VS_OUT
 {
 	float4 position : SV_POSITION;
-	//float2 color : UV;
+	float2 uv : UV;
 };
 cbuffer vsBuffer : register(b0)
 {
@@ -26,6 +26,7 @@ VS_OUT main(VS_IN input)
 	float4x4 viewProjTrans = transpose(viewProj);
 	output.position = mul(float4(input.position, 1), worldTrans);
 	output.position = mul(output.position, viewProjTrans);
+	output.uv = input.uv;
 	//output.color = input.color;
 	return output;
 }

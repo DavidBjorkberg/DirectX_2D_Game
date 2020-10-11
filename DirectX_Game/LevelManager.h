@@ -17,16 +17,18 @@ public:
 	LevelManager();
 	LevelManager(Graphics* graphics,CollisionHandler* collisionHandler);
 private:
-	ID3D11Buffer* blockIndexBuffer;
 	Graphics* graphics;
 	CollisionHandler* collisionHandler;
 	unsigned char* rgb;
 	int gridSizeX = 5;
 	int gridSizeY = 5;
 
+	Vector3 topLeftOfWindow = Vector3(-10.2f, 10.2f, 0);
 	bool IsBackground(int index);
 	int GetObjectHeight(int startIndex);
 	int GetObjectWidth(int startIndex);
-	void CreateBlockIndexBuffer();
 	void AddToRead(std::vector<unsigned int>& readVector, int startIndex, int width, int height);
+	bool HasBlockAbove(Vector3 pos);
+	bool HasBlockBelow(Vector3 pos);
+	void CreateLevelDrawables();
 };

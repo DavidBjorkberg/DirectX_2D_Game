@@ -29,7 +29,7 @@ bool Graphics::Init()
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	deviceContext->RSSetViewports(1, &vp);
-
+	CreateSquareIndexBuffer();
 
 	return true;
 }
@@ -86,9 +86,9 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-void Graphics::CreateDrawable(LevelBlockVertex vertices[],UINT verticesSize, ShaderClass* shaders
-	, ID3D11Buffer* vertexBuffer,UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
-	, vector<ID3D11Buffer*> psConstantBuffers, vector<ID3D11ShaderResourceView*> psResourceViews)
+void Graphics::CreateDrawable(std::vector<LevelBlockVertex> vertices, ShaderClass* shaders
+	, ID3D11Buffer* vertexBuffer, UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
+	, vector<ID3D11ShaderResourceView*> psResourceViews, vector<ID3D11Buffer*> psConstantBuffers)
 {
 	DrawableStruct* drawable = new DrawableStruct();
 	drawable->shaders = shaders;
@@ -97,17 +97,17 @@ void Graphics::CreateDrawable(LevelBlockVertex vertices[],UINT verticesSize, Sha
 	drawable->vsConstantBuffers = vsConstantBuffers;
 	drawable->psConstantBuffers = psConstantBuffers;
 	drawable->psResourceViews = psResourceViews;
-
+	drawable->nrOfVertices = vertices.size();
+	
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = verticesSize;
+	bufferDesc.ByteWidth = vertexSize * vertices.size();
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
-
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = vertices;
+	data.pSysMem = vertices.data();
 	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 	drawable->vertexBuffer = vertexBuffer;
 
@@ -138,9 +138,15 @@ void Graphics::Draw()
 		}
 		UINT32 offset = 0;
 		deviceContext->IASetVertexBuffers(0, 1, &drawables[i]->vertexBuffer, &drawables[i]->vertexSize, &offset);
-		deviceContext->IASetIndexBuffer(drawables[i]->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-		deviceContext->DrawIndexed(6, 0, 0);
+		if (drawables[i]->indexBuffer != nullptr)
+		{
+			deviceContext->IASetIndexBuffer(drawables[i]->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+			deviceContext->DrawIndexed(6, 0, 0);
+		}
+		else
+		{
+			deviceContext->Draw(drawables[i]->nrOfVertices, 0);
+		}
 	}
 }
 void Graphics::CreateConstantBuffer(ID3D11Buffer** buffer, UINT size)
@@ -153,4 +159,32 @@ void Graphics::CreateConstantBuffer(ID3D11Buffer** buffer, UINT size)
 
 	desc.ByteWidth = size;
 	device->CreateBuffer(&desc, NULL, buffer);
+}
+void Graphics::Update()
+{
+	float clearColor[4] = { 0,0,1,1 };
+	deviceContext->ClearRenderTargetView(renderTargetView, clearColor);
+	Draw();
+	swapChain->Present(0, 0);
+}
+void Graphics::CreateSquareIndexBuffer()
+{
+	DWORD indices[] = {
+	0,  1,  2,
+	0,  3,  1,
+	};
+
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
+
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * 6;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+
+	indexData.pSysMem = indices;
+	device->CreateBuffer(&indexBufferDesc, &indexData, &squareIndexBuffer);
 }

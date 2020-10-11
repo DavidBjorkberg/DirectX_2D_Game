@@ -1,8 +1,8 @@
 #pragma once
 #include<d3d11.h>
-#include"LevelBlock.h"
 #include "Camera.h"
 #include <vector>
+#include"Shaders.h"
 using namespace std;
 class Graphics
 {
@@ -11,12 +11,14 @@ public:
 	{
 		Vector3 pos;
 		Vector2 UV;
+
 	};
 	struct DrawableStruct
 	{
 		ShaderClass* shaders;
 		ID3D11Buffer* vertexBuffer;
 		UINT vertexSize;
+		UINT nrOfVertices;
 		ID3D11Buffer* indexBuffer;
 		vector<ID3D11Buffer*> vsConstantBuffers;
 		vector<ID3D11Buffer*> psConstantBuffers;
@@ -27,18 +29,21 @@ public:
 	ID3D11DeviceContext* deviceContext;
 	IDXGISwapChain* swapChain;
 	Camera camera;
+	ID3D11Buffer* squareIndexBuffer;
 
 	bool Init();
-	void CreateDrawable(LevelBlockVertex vertices[],UINT verticesSize,ShaderClass* shaders, ID3D11Buffer* vertexBuffer
+	void CreateDrawable(std::vector<LevelBlockVertex> vertices,ShaderClass* shaders, ID3D11Buffer* vertexBuffer
 		,UINT vertexSize,ID3D11Buffer* indexBuffer,vector<ID3D11Buffer*> vsConstantBuffers = vector<ID3D11Buffer*>()
-		, vector<ID3D11Buffer*> psConstantBuffers = vector<ID3D11Buffer*>(), vector<ID3D11ShaderResourceView*> psResourceViews = vector<ID3D11ShaderResourceView*>());
+		, vector<ID3D11ShaderResourceView*> psResourceViews = vector<ID3D11ShaderResourceView*>(), vector<ID3D11Buffer*> psConstantBuffers = vector<ID3D11Buffer*>());
 	void Draw();
 	void MoveCamera(float x, float y);
-	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size);
+	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size); 
+	void Update();
 	Graphics(HWND handle);
 	Graphics();
 	~Graphics();
 private:
+	void CreateSquareIndexBuffer();
 	HRESULT CreateDirect3DContext(HWND wndHandle);
 	HWND handle;
 	std::vector<DrawableStruct*> drawables;

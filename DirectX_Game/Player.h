@@ -4,6 +4,7 @@
 #include "Graphics.h"
 #include"CollisionHandler.h"
 #include"Keyboard.h"
+#include "Texture.h"
 using namespace DirectX::SimpleMath;
 class Player
 {
@@ -17,9 +18,10 @@ public:
 private:
 	enum class VelocityMode
 	{
-		Instant,
-		Force
+		Add,
+		Set
 	};
+	Texture texture;
 	Vector3 curVelocity;
 	CollisionHandler* collisionHandler;
 	BoxCollider* collider;
