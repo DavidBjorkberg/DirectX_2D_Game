@@ -22,6 +22,10 @@ cbuffer vsBuffer : register(b2)
 	int startFrameY;
 	int currentFrame;
 };
+cbuffer vsBuffer : register(b3)
+{
+	bool isFacingRight;
+};
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output;
@@ -34,7 +38,10 @@ VS_OUT main(VS_IN input)
 	float offsetY = 1.0f / 4.0f;
 	output.uv = float2(input.uv.x * offsetX, input.uv.y * offsetY);
 	output.uv += float2(offsetX * currentFrame, offsetY * startFrameY);
-
+	if (!isFacingRight)
+	{
+		output.uv = float2(1 - output.uv.x, output.uv.y);
+	}
 	return output;
 }
 

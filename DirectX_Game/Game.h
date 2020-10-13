@@ -9,12 +9,10 @@ class Game
 public:
 	void Initialize(HWND handle);
 	void Update();
-	std::unique_ptr<DirectX::Keyboard> keyboard;
 	Game();
 	Game(float* deltaTime);
 	~Game();
 private:
-	Player player;
 	float* deltaTime;
 	Texture backgroundTexture;
 	ShaderClass backgroundShaders;

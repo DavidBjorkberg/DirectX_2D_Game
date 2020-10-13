@@ -136,6 +136,7 @@ void Graphics::Draw()
 		{
 			deviceContext->PSSetShaderResources(j, 1, &drawables[i]->psResourceViews[j]);
 		}
+		          
 		deviceContext->PSSetSamplers(0, 1, &sampler);
 		UINT32 offset = 0;
 		deviceContext->IASetVertexBuffers(0, 1, &drawables[i]->vertexBuffer, &drawables[i]->vertexSize, &offset);

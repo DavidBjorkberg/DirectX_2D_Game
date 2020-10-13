@@ -1,18 +1,18 @@
 #include "Player.h"
 
-void Player::Update(float deltaTime, DirectX::Keyboard::State kb)
+void Player::Update(float deltaTime)
 {
 	this->deltaTime = deltaTime;
 	UpdateAnimation();
-	ApplyGravity(kb);
+	ApplyGravity();
 
-	GetInput(kb);
+	GetInput();
 	ClampVelocity();
 
 	CheckNextFrameCollision();
 	Move();
-	ApplyGravity(kb);
-	
+	ApplyGravity();
+
 }
 
 Vector3 Player::GetPosition()
@@ -21,21 +21,32 @@ Vector3 Player::GetPosition()
 }
 Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
 {
+	keyboard = std::make_unique<DirectX::Keyboard>();
+
 	this->position = pos;
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
 
-	texture.Initialize(graphics->device, graphics->deviceContext,"Textures/Player_SpriteSheet.png");
+	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/Player_SpriteSheet.png");
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
+	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
+	D3D11_MAPPED_SUBRESOURCE mappedMemory;
+	HRESULT hr = graphics->deviceContext->Map(facingDirBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
+	memcpy(mappedMemory.pData, &facingRight, sizeof(bool));
+	graphics->deviceContext->Unmap(facingDirBuffer, 0);
 	InitializeShaders();
 	CreateIndexBuffer(graphics);
 
+	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f);
+	collisionHandler->AddCollider(collider);
+
 	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump);
 	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
+	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
 	currentAnimation = jumpAnimation->Play(currentAnimationBuffer);
 	CreateDrawable();
-	
+
 }
 void Player::CreateIndexBuffer(Graphics* graphics)
 {
@@ -108,16 +119,16 @@ void Player::AddVelocity(Vector3 addVelocity, VelocityMode velocityMode)
 	else if (velocityMode == VelocityMode::Set)
 	{
 		curVelocity = addVelocity;
-	} 
+	}
 }
-void Player::ApplyGravity(DirectX::Keyboard::State kb)
+void Player::ApplyGravity()
 {
 	//For high jump
 	if (curVelocity.y < 0)
 	{
 		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Add);
 	}
-	else if (curVelocity.y > 0 && !kb.Space)
+	else if (curVelocity.y > 0 && !keyboard->GetState().Space)
 	{
 		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Add);
 	}
@@ -125,17 +136,27 @@ void Player::ApplyGravity(DirectX::Keyboard::State kb)
 	AddVelocity(Vector3::Down * gravity * deltaTime, VelocityMode::Add);
 }
 
-void Player::GetInput(DirectX::Keyboard::State kb)
+void Player::GetInput()
 {
+	DirectX::Keyboard::State kb = keyboard->GetState();
+
 	if (kb.A)
 	{
+		if (facingRight)
+		{
+			SwitchFacingDir();
+		}
 		AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Add);
 	}
 	else if (kb.D)
 	{
+		if (!facingRight)
+		{
+			SwitchFacingDir();
+		}
 		AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Add);
 	}
-	else if(IsGrounded())
+	else if (IsGrounded())
 	{
 		if (curVelocity.x > 0)
 		{
@@ -204,40 +225,79 @@ void Player::CreateDrawable()
 	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
 	vsConstantBuffers.push_back(moveBuffer);
 	vsConstantBuffers.push_back(currentAnimationBuffer);
+	vsConstantBuffers.push_back(facingDirBuffer);
 	vector<ID3D11ShaderResourceView*> psResourceViews;
 	psResourceViews.push_back(texture.GetResourceView());
-
 
 	std::vector<Graphics::LevelBlockVertex> vertices;
 	vertices.push_back({ position + Vector3(0,height,0)		,Vector2(0,0) });
 	vertices.push_back({ position + Vector3(width,0,0)		,Vector2(1,1) });
 	vertices.push_back({ position							,Vector2(0,1) });
 	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
-	collider = new BoxCollider(position, width, height);
-	collisionHandler->AddCollider(collider);
+
 	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), indexBuffer, vsConstantBuffers, psResourceViews);
+}
+
+void Player::SwitchFacingDir()
+{
+	if (facingRight)
+	{
+		previousTranslation += Vector3(-1, 0, 0);
+		moveMatrix = Matrix::CreateTranslation(previousTranslation);
+		collider->Move(Vector3(-0.4f, 0, 0));
+		D3D11_MAPPED_SUBRESOURCE mappedMemory;
+		HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
+		memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
+		graphics->deviceContext->Unmap(moveBuffer, 0);
+	}
+	else
+	{
+		previousTranslation += Vector3(1, 0, 0);
+		moveMatrix = Matrix::CreateTranslation(previousTranslation);
+		collider->Move(Vector3(0.4f, 0, 0));
+		D3D11_MAPPED_SUBRESOURCE mappedMemory;
+		HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
+		memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
+		graphics->deviceContext->Unmap(moveBuffer, 0);
+	}
+	facingRight = !facingRight;
+	D3D11_MAPPED_SUBRESOURCE mappedMemory;
+	HRESULT hr = graphics->deviceContext->Map(facingDirBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
+	memcpy(mappedMemory.pData, &facingRight, sizeof(bool));
+	graphics->deviceContext->Unmap(facingDirBuffer, 0);
+
 }
 
 void Player::UpdateAnimation()
 {
+	DirectX::Keyboard::State kb = keyboard->GetState();
 	if (currentAnimation->animationType == Animation::AnimationType::Jump
 		&& IsGrounded())
 	{
-		currentAnimation = idleAnimation->Play(currentAnimationBuffer);
-	}
-	currentAnimation->Update(deltaTime,currentAnimationBuffer);
-	if (!currentAnimation->isPlaying)
-	{
-		if (currentAnimation->animationType == Animation::AnimationType::Jump)
+		if (kb.A || kb.D)
 		{
-			if (IsGrounded())
-			{
-				currentAnimation = idleAnimation->Play(currentAnimationBuffer);
-			}
+			currentAnimation = runAnimation->Play(currentAnimationBuffer);
 		}
 		else
 		{
 			currentAnimation = idleAnimation->Play(currentAnimationBuffer);
+		}
+	}
+
+	currentAnimation->Update(deltaTime, currentAnimationBuffer);
+
+	if (!currentAnimation->isPlaying)
+	{
+		if (currentAnimation->animationType != Animation::AnimationType::Jump)
+		{
+			if (kb.A || kb.D)
+			{
+				currentAnimation = runAnimation->Play(currentAnimationBuffer);
+			}
+			else
+			{
+				currentAnimation = idleAnimation->Play(currentAnimationBuffer);
+			}
 		}
 	}
 

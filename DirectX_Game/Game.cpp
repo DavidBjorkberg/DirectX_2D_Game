@@ -6,13 +6,11 @@ void Game::Initialize(HWND handle)
 	graphics = Graphics(handle);
 	CreateBackground();
 	levelManager = LevelManager(&graphics, &collisionHandler);
-	keyboard = std::make_unique<DirectX::Keyboard>();
-	player = Player(Vector3(-2.0f, 2.0f, 0), &graphics, &collisionHandler);
 }
 
 void Game::Update()
 {
-	player.Update(*deltaTime, keyboard->GetState());
+	levelManager.Update(*deltaTime);
 	graphics.Update();
 }
 Game::Game()
@@ -26,7 +24,6 @@ Game::Game(float* deltaTime)
 
 Game::~Game()
 {
-	keyboard.release();
 }
 
 void Game::DrawScene()
