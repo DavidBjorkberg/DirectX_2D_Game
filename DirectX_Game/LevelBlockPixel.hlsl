@@ -10,7 +10,7 @@ cbuffer dimensions : register(b0)
 	float width;
 	float height;
 };
-SamplerState _sampler;
+SamplerState _sampler : register(s0);
 Texture2D colourTex : register(t0);
 float4 main(VS_OUT input) : SV_TARGET
 {

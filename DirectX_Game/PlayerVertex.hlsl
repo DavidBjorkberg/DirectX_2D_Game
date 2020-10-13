@@ -17,17 +17,24 @@ cbuffer vsBuffer : register(b1)
 {
 	float4x4 world;
 };
+cbuffer vsBuffer : register(b2)
+{
+	int startFrameY;
+	int currentFrame;
+};
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output;
-	//float4x4 wvp = mul(world, viewProj);
-	//float4x4 wvpTrans = transpose(wvp);
 	float4x4 worldTrans = transpose(world);
 	float4x4 viewProjTrans = transpose(viewProj);
 	output.position = mul(float4(input.position, 1), worldTrans);
 	output.position = mul(output.position, viewProjTrans);
-	output.uv = input.uv;
-	//output.color = input.color;
+
+	float offsetX = 1.0f / 8.0f;
+	float offsetY = 1.0f / 4.0f;
+	output.uv = float2(input.uv.x * offsetX, input.uv.y * offsetY);
+	output.uv += float2(offsetX * currentFrame, offsetY * startFrameY);
+
 	return output;
 }
 

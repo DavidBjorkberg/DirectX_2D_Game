@@ -44,7 +44,9 @@ public:
 	~Graphics();
 private:
 	void CreateSquareIndexBuffer();
+	void InitSampler();
 	HRESULT CreateDirect3DContext(HWND wndHandle);
 	HWND handle;
 	std::vector<DrawableStruct*> drawables;
+	ID3D11SamplerState* sampler;
 };

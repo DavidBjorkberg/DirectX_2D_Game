@@ -34,7 +34,7 @@ void Camera::Move(float x, float y)
 void Camera::Init()
 {
 	this->position = Vector3(0, 0, -1);
-	projMatrix = DirectX::XMMatrixOrthographicLH(20, 20, 0.1f, 20.0f);
+	projMatrix = DirectX::XMMatrixOrthographicLH(20,20, 0.1f, 20.0f);
 	UpdateViewMatrix();
 }
 

@@ -17,6 +17,6 @@ LevelBlock::LevelBlock(Vector3 pos, float width, float height, Graphics* graphic
 	memcpy(mappedMemory.pData, &dimensions, sizeof(Dimensions));
 	graphics->deviceContext->Unmap(dimensionsBuffer, 0);
 
-	texture.Initialize(graphics->device, graphics->deviceContext, "BlockTileSet.png");
+	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/BlockTileSet.png");
 }
 

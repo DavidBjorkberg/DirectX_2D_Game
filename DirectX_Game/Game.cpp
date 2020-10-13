@@ -2,6 +2,7 @@
 
 void Game::Initialize(HWND handle)
 {
+	CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	graphics = Graphics(handle);
 	CreateBackground();
 	levelManager = LevelManager(&graphics, &collisionHandler);
@@ -34,7 +35,7 @@ void Game::DrawScene()
 
 void Game::CreateBackground()
 {
-	backgroundTexture.Initialize(graphics.device, graphics.deviceContext, "Background.png");
+	backgroundTexture.Initialize(graphics.device, graphics.deviceContext, "Textures/Background.png");
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
 		{"SV_POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },

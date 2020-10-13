@@ -5,8 +5,8 @@ bool Graphics::Init()
 	CreateDirect3DContext(handle);
 	HRESULT result;
 	D3D11_TEXTURE2D_DESC descRenderTarget;
-	descRenderTarget.Width = 768;
-	descRenderTarget.Height = 768;
+	descRenderTarget.Width = 1080;
+	descRenderTarget.Height = 720;
 	descRenderTarget.MipLevels = 1;
 	descRenderTarget.ArraySize = 1;
 	descRenderTarget.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -22,15 +22,15 @@ bool Graphics::Init()
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, NULL);
 
 	D3D11_VIEWPORT vp;
-	vp.Width = 768;
-	vp.Height = 768;
+	vp.Width = 1080;
+	vp.Height = 720;
 	vp.MinDepth = 0.0001f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	deviceContext->RSSetViewports(1, &vp);
 	CreateSquareIndexBuffer();
-
+	InitSampler();
 	return true;
 }
 
@@ -136,6 +136,7 @@ void Graphics::Draw()
 		{
 			deviceContext->PSSetShaderResources(j, 1, &drawables[i]->psResourceViews[j]);
 		}
+		deviceContext->PSSetSamplers(0, 1, &sampler);
 		UINT32 offset = 0;
 		deviceContext->IASetVertexBuffers(0, 1, &drawables[i]->vertexBuffer, &drawables[i]->vertexSize, &offset);
 		if (drawables[i]->indexBuffer != nullptr)
@@ -187,4 +188,18 @@ void Graphics::CreateSquareIndexBuffer()
 
 	indexData.pSysMem = indices;
 	device->CreateBuffer(&indexBufferDesc, &indexData, &squareIndexBuffer);
+}
+
+void Graphics::InitSampler()
+{
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = 0;
+	device->CreateSamplerState(&sampDesc, &sampler);
 }

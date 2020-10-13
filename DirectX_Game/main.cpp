@@ -24,8 +24,8 @@ using namespace DirectX;
 
 HWND InitWindow(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-#define WIDTH 768.0f
-#define HEIGHT 768.0f
+#define WIDTH 1080.0f
+#define HEIGHT 720.0f
 #define ZERO(X) ZeroMemory(&X, sizeof(X))
 
 HWND hwnd = NULL;
@@ -76,7 +76,7 @@ HWND InitWindow(HINSTANCE hInstance)
 	wcex.lpszClassName = L"DirectX Renderer";
 	RegisterClassEx(&wcex);
 
-	RECT rc = { 0, 0, 640, 480 };
+	RECT rc = { 0, 0, 1080, 720 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
 	HWND handle = CreateWindow(

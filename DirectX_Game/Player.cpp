@@ -3,6 +3,7 @@
 void Player::Update(float deltaTime, DirectX::Keyboard::State kb)
 {
 	this->deltaTime = deltaTime;
+	UpdateAnimation();
 	ApplyGravity(kb);
 
 	GetInput(kb);
@@ -11,6 +12,7 @@ void Player::Update(float deltaTime, DirectX::Keyboard::State kb)
 	CheckNextFrameCollision();
 	Move();
 	ApplyGravity(kb);
+	
 }
 
 Vector3 Player::GetPosition()
@@ -22,41 +24,18 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	this->position = pos;
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
-	texture.Initialize(graphics->device, graphics->deviceContext,"Player.png");
-	std::vector<Graphics::LevelBlockVertex> vertices;
-	vertices.push_back({ pos + Vector3(0,height,0)		,Vector2(0,0) });
-	vertices.push_back({ pos + Vector3(width,0,0)		,Vector2(1,1) });
-	vertices.push_back({ pos							,Vector2(0,1) });
-	vertices.push_back({ pos + Vector3(width,height,0)	,Vector2(1,0) });
 
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-	{
-		{"SV_POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
-		{"UV", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
-	};
-	UINT numElements = ARRAYSIZE(inputDesc);
-	shaders = new ShaderClass();
-	shaders->CreateVS(graphics->device, L"PlayerVertex.hlsl", inputDesc, numElements);
-	shaders->CreatePS(graphics->device, L"PlayerPixel.hlsl");
-
+	texture.Initialize(graphics->device, graphics->deviceContext,"Textures/Player_SpriteSheet.png");
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
-
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
-	graphics->deviceContext->Unmap(moveBuffer, 0);
-
-	vector<ID3D11Buffer*> vsConstantBuffers;
-	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
-	vsConstantBuffers.push_back(moveBuffer);
-	vector<ID3D11ShaderResourceView*> psResourceViews;
-	psResourceViews.push_back(texture.GetResourceView());
-
-	collider = new BoxCollider(pos, width, height);
-	collisionHandler->AddCollider(collider);
-	
+	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
+	InitializeShaders();
 	CreateIndexBuffer(graphics);
-	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), indexBuffer, vsConstantBuffers, psResourceViews);
+
+	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump);
+	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
+	currentAnimation = jumpAnimation->Play(currentAnimationBuffer);
+	CreateDrawable();
+	
 }
 void Player::CreateIndexBuffer(Graphics* graphics)
 {
@@ -89,7 +68,6 @@ void Player::Move()
 		previousTranslation += finalVelocity;
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(finalVelocity);
-
 		D3D11_MAPPED_SUBRESOURCE mappedMemory;
 		HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
 		memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
@@ -99,6 +77,7 @@ void Player::Move()
 void Player::Jump()
 {
 	AddVelocity(Vector3(curVelocity.x, jumpForce, 0), VelocityMode::Set);
+	currentAnimation = jumpAnimation->Play(currentAnimationBuffer);
 }
 void Player::CheckNextFrameCollision()
 {
@@ -188,7 +167,7 @@ void Player::GetInput(DirectX::Keyboard::State kb)
 
 bool Player::IsGrounded()
 {
-	return collisionHandler->isCollidingAfterMove(collider, Vector3::Down * 0.1f);
+	return collisionHandler->isCollidingAfterMove(collider, Vector3::Down * 0.1f) && curVelocity.y <= 0;
 }
 
 void Player::ClampVelocity()
@@ -204,5 +183,63 @@ void Player::ClampVelocity()
 			curVelocity.x = -maxXVelocity;
 		}
 	}
+}
+
+void Player::InitializeShaders()
+{
+	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
+	{
+		{"SV_POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
+		{"UV", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
+	};
+	UINT numElements = ARRAYSIZE(inputDesc);
+	shaders = new ShaderClass();
+	shaders->CreateVS(graphics->device, L"PlayerVertex.hlsl", inputDesc, numElements);
+	shaders->CreatePS(graphics->device, L"PlayerPixel.hlsl");
+}
+
+void Player::CreateDrawable()
+{
+	vector<ID3D11Buffer*> vsConstantBuffers;
+	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
+	vsConstantBuffers.push_back(moveBuffer);
+	vsConstantBuffers.push_back(currentAnimationBuffer);
+	vector<ID3D11ShaderResourceView*> psResourceViews;
+	psResourceViews.push_back(texture.GetResourceView());
+
+
+	std::vector<Graphics::LevelBlockVertex> vertices;
+	vertices.push_back({ position + Vector3(0,height,0)		,Vector2(0,0) });
+	vertices.push_back({ position + Vector3(width,0,0)		,Vector2(1,1) });
+	vertices.push_back({ position							,Vector2(0,1) });
+	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
+	collider = new BoxCollider(position, width, height);
+	collisionHandler->AddCollider(collider);
+	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), indexBuffer, vsConstantBuffers, psResourceViews);
+}
+
+void Player::UpdateAnimation()
+{
+	if (currentAnimation->animationType == Animation::AnimationType::Jump
+		&& IsGrounded())
+	{
+		currentAnimation = idleAnimation->Play(currentAnimationBuffer);
+	}
+	currentAnimation->Update(deltaTime,currentAnimationBuffer);
+	if (!currentAnimation->isPlaying)
+	{
+		if (currentAnimation->animationType == Animation::AnimationType::Jump)
+		{
+			if (IsGrounded())
+			{
+				currentAnimation = idleAnimation->Play(currentAnimationBuffer);
+			}
+		}
+		else
+		{
+			currentAnimation = idleAnimation->Play(currentAnimationBuffer);
+		}
+	}
+
 }
 

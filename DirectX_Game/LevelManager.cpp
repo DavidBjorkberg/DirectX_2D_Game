@@ -61,7 +61,7 @@ LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandle
 	levelBlockShaders->CreateVS(graphics->device, L"LevelBlockVertex.hlsl", inputDesc, numElements);
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
-	ReadLevel("Level.png");
+	ReadLevel("Textures/Level.png");
 	CreateLevelDrawables();
 }
 
