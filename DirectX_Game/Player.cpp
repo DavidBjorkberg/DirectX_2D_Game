@@ -31,10 +31,7 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
 	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = graphics->deviceContext->Map(facingDirBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &facingRight, sizeof(bool));
-	graphics->deviceContext->Unmap(facingDirBuffer, 0);
+	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 	InitializeShaders();
 	CreateIndexBuffer(graphics);
 
@@ -79,10 +76,7 @@ void Player::Move()
 		previousTranslation += finalVelocity;
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(finalVelocity);
-		D3D11_MAPPED_SUBRESOURCE mappedMemory;
-		HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-		memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
-		graphics->deviceContext->Unmap(moveBuffer, 0);
+		graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
 	}
 }
 void Player::Jump()
@@ -245,27 +239,16 @@ void Player::SwitchFacingDir()
 		previousTranslation += Vector3(-1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(Vector3(-0.4f, 0, 0));
-		D3D11_MAPPED_SUBRESOURCE mappedMemory;
-		HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-		memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
-		graphics->deviceContext->Unmap(moveBuffer, 0);
 	}
 	else
 	{
 		previousTranslation += Vector3(1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(Vector3(0.4f, 0, 0));
-		D3D11_MAPPED_SUBRESOURCE mappedMemory;
-		HRESULT hr = graphics->deviceContext->Map(moveBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-		memcpy(mappedMemory.pData, &moveMatrix, sizeof(Matrix));
-		graphics->deviceContext->Unmap(moveBuffer, 0);
 	}
+	graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
 	facingRight = !facingRight;
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = graphics->deviceContext->Map(facingDirBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &facingRight, sizeof(bool));
-	graphics->deviceContext->Unmap(facingDirBuffer, 0);
-
+	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 }
 
 void Player::UpdateAnimation()

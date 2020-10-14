@@ -169,6 +169,13 @@ void Graphics::Update()
 	Draw();
 	swapChain->Present(0, 0);
 }
+void Graphics::MapToBuffer(ID3D11Buffer* buffer, const void* data, size_t size)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedMemory;
+	HRESULT hr = deviceContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
+	memcpy(mappedMemory.pData, data, size);
+	deviceContext->Unmap(buffer, 0);
+}
 void Graphics::CreateSquareIndexBuffer()
 {
 	DWORD indices[] = {

@@ -5,6 +5,7 @@ void Camera::UpdateViewMatrix()
 	lookTarget = Vector3(position.x, position.y, 1);
 	viewMatrix = XMMatrixLookAtLH(this->position, lookTarget, Vector3::Up);
 	viewProj = viewMatrix * projMatrix;
+	
 	D3D11_MAPPED_SUBRESOURCE mappedMemory;
 	HRESULT hr = deviceContext->Map(viewProjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
 	memcpy(mappedMemory.pData, &viewProj, sizeof(Matrix));

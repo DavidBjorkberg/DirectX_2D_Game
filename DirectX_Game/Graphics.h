@@ -39,6 +39,7 @@ public:
 	void MoveCamera(float x, float y);
 	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size); 
 	void Update();
+	void MapToBuffer(ID3D11Buffer* buffer, const void* data, size_t size);
 	Graphics(HWND handle);
 	Graphics();
 	~Graphics();

@@ -44,10 +44,7 @@ void Animation::Update(float deltaTime,ID3D11Buffer* animationBuffer)
 		{
 			currentFrameTimer = 0;
 			animationData.currentFrame++;
-			D3D11_MAPPED_SUBRESOURCE mappedMemory;
-			HRESULT hr = graphics->deviceContext->Map(animationBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-			memcpy(mappedMemory.pData, &animationData, sizeof(AnimationData));
-			graphics->deviceContext->Unmap(animationBuffer, 0);
+			graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
 		}
 	}
 }
@@ -55,9 +52,6 @@ void Animation::Update(float deltaTime,ID3D11Buffer* animationBuffer)
 Animation* Animation::Play(ID3D11Buffer* animationBuffer)
 {
 	isPlaying = true;
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = graphics->deviceContext->Map(animationBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &animationData, sizeof(AnimationData));
-	graphics->deviceContext->Unmap(animationBuffer, 0);
+	graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
 	return this;
 }
