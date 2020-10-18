@@ -8,9 +8,14 @@ Animation::Animation(Graphics* graphics, AnimationType animationType)
 {
 	this->graphics = graphics;
 	this->animationType = animationType;
+	FPS = 5;
+	animationData.currentFrame = 0;
+	currentFrameTimer = 0;
 	if (animationType == AnimationType::Attack)
 	{
 		animationData.startFrameY = 0;
+		FPS = 10;
+		loop = false;
 	}
 	else if (animationType == AnimationType::Idle)
 	{
@@ -19,26 +24,30 @@ Animation::Animation(Graphics* graphics, AnimationType animationType)
 	else if (animationType == AnimationType::Jump)
 	{
 		animationData.startFrameY = 2;
+		loop = false;
 	}
 	else if (animationType == AnimationType::Run)
 	{
 		animationData.startFrameY = 3;
 	}
-	animationData.currentFrame = 0;
-	FPS = 5;
-	currentFrameTimer = 0;
 }
 
-void Animation::Update(float deltaTime,ID3D11Buffer* animationBuffer)
+void Animation::Update(float deltaTime, ID3D11Buffer* animationBuffer)
 {
 	currentFrameTimer += deltaTime;
 	if (isPlaying && currentFrameTimer >= 1.0f / FPS)
 	{
 		if (animationData.currentFrame >= 7)
 		{
-			isPlaying = false;
-			currentFrameTimer = 0;
-			animationData.currentFrame = 0;
+			if (loop)
+			{
+				currentFrameTimer = 0;
+				animationData.currentFrame = 0;
+			}
+			else
+			{
+				isPlaying = false;
+			}
 		}
 		else
 		{
@@ -49,9 +58,14 @@ void Animation::Update(float deltaTime,ID3D11Buffer* animationBuffer)
 	}
 }
 
-Animation* Animation::Play(ID3D11Buffer* animationBuffer)
+Animation* Animation::Play(ID3D11Buffer* animationBuffer, Animation* currentAnimation)
 {
-	isPlaying = true;
-	graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
+	if (currentAnimation != this)
+	{
+		isPlaying = true;
+		currentFrameTimer = 0;
+		animationData.currentFrame = 0;
+		graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
+	}
 	return this;
 }

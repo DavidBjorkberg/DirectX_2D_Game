@@ -4,11 +4,12 @@ BoxCollider::BoxCollider()
 {
 }
 
-BoxCollider::BoxCollider(Vector3 bottomLeftPos, float width, float height)
+BoxCollider::BoxCollider(Vector3 bottomLeftPos, float width, float height, int unitIndex)
 {
 	this->bottomLeftPos = bottomLeftPos;
 	this->width = width;
 	this->height = height;
+	this->unitIndex = unitIndex;
 }
 
 bool BoxCollider::IsColliding(BoxCollider* other)

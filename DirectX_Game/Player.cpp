@@ -3,8 +3,13 @@
 void Player::Update(float deltaTime)
 {
 	this->deltaTime = deltaTime;
-	playerMovement->Update(deltaTime,&currentAnimation,currentAnimationBuffer);
 	UpdateAnimation();
+	playerMovement->Update(deltaTime, &currentAnimation, currentAnimationBuffer);
+}
+
+std::vector<int> Player::GetEnemyHitIndices()
+{
+	return hitEnemyIndices;
 }
 
 Vector3 Player::GetPosition()
@@ -23,9 +28,12 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 
 	InitializeShaders();
 	CreateIndexBuffer(graphics);
-	playerMovement = new PlayerMovement(pos, width, height, collisionHandler,&currentAnimation,&currentAnimationBuffer,graphics,keyboard.get());
-	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, 0, 0), attackRange, attackHeight);
-	currentAnimation = playerMovement->jumpAnimation->Play(currentAnimationBuffer);
+	playerMovement = new PlayerMovement(pos, width, height, collisionHandler, &currentAnimation, &currentAnimationBuffer, graphics, keyboard.get());
+	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump);
+	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
+	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
+	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack);
+	currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
 	CreateDrawable();
 
 }
@@ -54,7 +62,15 @@ Player::Player()
 }
 void Player::Attack()
 {
+	std::vector<BoxCollider*> hits = playerMovement->collisionHandler->GetCollisions(playerMovement->collider);
 
+	for (int i = 0; i < hits.size(); i++)
+	{
+		if (hits[i]->unitIndex > 0)
+		{
+			hitEnemyIndices.push_back(hits[i]->unitIndex);
+		}
+	}
 }
 
 void Player::InitializeShaders()
@@ -93,35 +109,38 @@ void Player::CreateDrawable()
 void Player::UpdateAnimation()
 {
 	DirectX::Keyboard::State kb = keyboard->GetState();
-	if (currentAnimation->animationType == Animation::AnimationType::Jump
-		&& playerMovement->IsGrounded())
+	switch (currentAnimation->animationType)
 	{
-		if (kb.A || kb.D)
+	case Animation::AnimationType::Attack:
+		if (!currentAnimation->isPlaying)
 		{
-			currentAnimation = playerMovement->runAnimation->Play(currentAnimationBuffer);
+			currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
+			isAttacking = false;
 		}
-		else
+		break;
+	default:
+		if (kb.X)
 		{
-			currentAnimation = playerMovement->idleAnimation->Play(currentAnimationBuffer);
+			currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
+			isAttacking = true;
 		}
-	}
-
-	currentAnimation->Update(deltaTime, currentAnimationBuffer);
-
-	if (!currentAnimation->isPlaying)
-	{
-		if (currentAnimation->animationType != Animation::AnimationType::Jump)
+		else if (playerMovement->IsGrounded())
 		{
 			if (kb.A || kb.D)
 			{
-				currentAnimation = playerMovement->runAnimation->Play(currentAnimationBuffer);
+				currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
+			}
+			else if (kb.Space)
+			{
+				currentAnimation = jumpAnimation->Play(currentAnimationBuffer, currentAnimation);
 			}
 			else
 			{
-				currentAnimation = playerMovement->idleAnimation->Play(currentAnimationBuffer);
+				currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
 			}
 		}
+		break;
 	}
-
+	currentAnimation->Update(deltaTime, currentAnimationBuffer);
 }
 

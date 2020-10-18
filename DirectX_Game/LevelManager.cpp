@@ -3,6 +3,12 @@
 void LevelManager::Update(float deltaTime)
 {
 	player.Update(deltaTime);
+
+	std::vector<int> hitEnemyIndices = player.GetEnemyHitIndices();
+	for (int i = 0; i < hitEnemyIndices.size(); i++)
+	{
+		//Deal damage
+	}
 }
 
 LevelManager::LevelManager()

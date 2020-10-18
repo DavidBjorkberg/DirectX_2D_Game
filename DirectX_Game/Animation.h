@@ -8,8 +8,9 @@ public:
 	{
 		Attack, Idle, Jump, Run
 	};
-	Animation* Play(ID3D11Buffer* animationBuffer);
+	Animation* Play(ID3D11Buffer* animationBuffer, Animation* currentAnimation);
 	bool isPlaying;
+	bool loop = true;
 	AnimationType animationType;
 
 	void Update(float deltaTime, ID3D11Buffer* animationBuffer);

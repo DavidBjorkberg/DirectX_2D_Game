@@ -9,12 +9,12 @@ PlayerMovement::PlayerMovement(Vector3 position, float width, float height, Coll
 	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
 	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 	this->keyboard = keyboard;
-	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f);
+	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f, 0);
+	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, 0, 0), attackRange, attackHeight, -1);
+
 	collisionHandler->AddCollider(collider);
 
-	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump);
-	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
-	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
+
 
 }
 void PlayerMovement::Update(float deltaTime, Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer)
@@ -37,13 +37,13 @@ void PlayerMovement::Move()
 		previousTranslation += finalVelocity;
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(finalVelocity);
+		attackCollider->Move(finalVelocity);
 		graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
 	}
 }
-void PlayerMovement::Jump(Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer)
+void PlayerMovement::Jump()
 {
 	AddVelocity(Vector3(curVelocity.x, jumpForce, 0), VelocityMode::Set);
-	*currentAnimation = (jumpAnimation->Play(currentAnimationBuffer));
 }
 void PlayerMovement::CheckNextFrameCollision()
 {
@@ -114,15 +114,7 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 	}
 	if (IsGrounded())
 	{
-		if (kb.A || kb.D)
-		{
-			Animation* animationPtr = *currentAnimation;
-			if (animationPtr->animationType != Animation::AnimationType::Run)
-			{
-				*currentAnimation = runAnimation->Play(currentAnimationBuffer); //TODO: Handle all animation in player class? Check input again
-			}
-		}
-		else
+		if (!kb.A && !kb.D)
 		{
 			if (curVelocity.x > 0)
 			{
@@ -141,11 +133,11 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 				}
 			}
 		}
-	}
-	if (kb.IsKeyDown(DirectX::Keyboard::Keys::Space) && IsGrounded() && canJump)
-	{
-		Jump(currentAnimation, currentAnimationBuffer);
-		canJump = false;
+		if (kb.IsKeyDown(DirectX::Keyboard::Keys::Space) && canJump)
+		{
+			Jump();
+			canJump = false;
+		}
 	}
 	if (kb.IsKeyUp(DirectX::Keyboard::Keys::Space))
 	{

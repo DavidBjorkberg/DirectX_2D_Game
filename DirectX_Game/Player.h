@@ -12,18 +12,21 @@ class Player
 {
 public:
 	ID3D11Buffer* vertexBuffer;
+	std::vector<int> GetEnemyHitIndices();
 	Vector3 GetPosition();
+	void UpdateAnimation();
 	void Update(float deltaTime);
 	void CreateIndexBuffer(Graphics* graphics);
 	Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler);
 	Player();
-	void UpdateAnimation();
 
 private:
-
+	Animation* jumpAnimation;//
+	Animation* idleAnimation;//
+	Animation* runAnimation;// 
+	Animation* attackAnimation;// 
 	std::unique_ptr<DirectX::Keyboard> keyboard;
 	Texture texture;
-	BoxCollider* attackCollider;
 	ID3D11Buffer* indexBuffer;
 	ShaderClass* shaders;
 	Graphics* graphics;
@@ -31,12 +34,11 @@ private:
 	Animation* currentAnimation;
 	ID3D11Buffer* currentAnimationBuffer;
 	PlayerMovement* playerMovement;
-	float attackRange = 1;
-	float attackHeight = 1;
+	std::vector<int> hitEnemyIndices;
 	float width = 2;
 	float height = 2;
 	float deltaTime;
-
+	bool isAttacking;
 	void Attack();
 
 	void InitializeShaders();
