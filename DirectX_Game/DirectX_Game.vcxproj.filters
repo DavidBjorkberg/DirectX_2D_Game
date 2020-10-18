@@ -60,6 +60,9 @@
     <ClCompile Include="PlayerMovement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shaders.h">
@@ -104,6 +107,9 @@
     <ClInclude Include="PlayerMovement.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="LevelBlockVertex.hlsl">
@@ -122,6 +128,12 @@
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="BGPixel.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="EnemyVertex.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="EnemyPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

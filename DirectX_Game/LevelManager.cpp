@@ -3,11 +3,15 @@
 void LevelManager::Update(float deltaTime)
 {
 	player.Update(deltaTime);
-
+	
 	std::vector<int> hitEnemyIndices = player.GetEnemyHitIndices();
 	for (int i = 0; i < hitEnemyIndices.size(); i++)
 	{
 		//Deal damage
+	}
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i]->Update(deltaTime);
 	}
 }
 
@@ -22,6 +26,10 @@ LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandle
 	this->collisionHandler = collisionHandler;
 	levelReader->ReadLevel("Textures/Level.png");
 	player = Player(levelReader->playerSpawnPos, graphics, collisionHandler);
+	for (int i = 0; i < levelReader->enemySpawnPos.size(); i++)
+	{
+		enemies.push_back(new Enemy(levelReader->enemySpawnPos[i], graphics, collisionHandler));
+	}
 	InitializeColliders();
 }
 

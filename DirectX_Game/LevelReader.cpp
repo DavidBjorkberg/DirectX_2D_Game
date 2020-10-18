@@ -244,7 +244,7 @@ void LevelReader::CreateUnit(int index, PixelType type)
 	}
 	else if (type == PixelType::Enemy)
 	{
-
+		enemySpawnPos.push_back(position);
 	}
 }
 LevelReader::PixelType LevelReader::GetPixelType(int index)
@@ -262,9 +262,8 @@ LevelReader::PixelType LevelReader::GetPixelType(int index)
 	{
 		return PixelType::Player;
 	}
-	else
+	else if(rgb[index] == 255 && rgb[index+1] == 0 && rgb[index +2] == 0)
 	{
 		return PixelType::Enemy;
-
 	}
 }

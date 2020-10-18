@@ -42,6 +42,23 @@ BoxCollider* CollisionHandler::isCollidingAfterMove(BoxCollider* collider, Vecto
 	return nullptr;
 }
 
+bool CollisionHandler::IsPointCollidingWithLevel(Vector3 point)
+{
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		if (colliders[i]->unitIndex != -1)
+		{
+			continue;
+		}
+		if (point.x > colliders[i]->bottomLeftPos.x && point.x < colliders[i]->bottomLeftPos.x + colliders[i]->width
+			&& point.y > colliders[i]->bottomLeftPos.y && point.y < colliders[i]->bottomLeftPos.y + colliders[i]->height)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 CollisionHandler::CollisionHandler()
 {
 }

@@ -6,7 +6,7 @@ class Animation
 public:
 	enum class AnimationType
 	{
-		Attack, Idle, Jump, Run
+		Attack, Idle, Jump, Run,Hit,Death
 	};
 	Animation* Play(ID3D11Buffer* animationBuffer, Animation* currentAnimation);
 	bool isPlaying;

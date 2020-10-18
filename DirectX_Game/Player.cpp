@@ -4,7 +4,7 @@ void Player::Update(float deltaTime)
 {
 	this->deltaTime = deltaTime;
 	UpdateAnimation();
-	playerMovement->Update(deltaTime, &currentAnimation, currentAnimationBuffer);
+	playerMovement->Update (deltaTime, &currentAnimation, currentAnimationBuffer);
 }
 
 std::vector<int> Player::GetEnemyHitIndices()
@@ -12,10 +12,6 @@ std::vector<int> Player::GetEnemyHitIndices()
 	return hitEnemyIndices;
 }
 
-Vector3 Player::GetPosition()
-{
-	return position;
-}
 Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
 {
 	keyboard = std::make_unique<DirectX::Keyboard>();
@@ -27,7 +23,6 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
 
 	InitializeShaders();
-	CreateIndexBuffer(graphics);
 	playerMovement = new PlayerMovement(pos, width, height, collisionHandler, &currentAnimation, &currentAnimationBuffer, graphics, keyboard.get());
 	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump);
 	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
@@ -37,26 +32,7 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	CreateDrawable();
 
 }
-void Player::CreateIndexBuffer(Graphics* graphics)
-{
-	DWORD indices[] = {
-	0,  1,  2,
-	0,  3,  1,
-	};
 
-	D3D11_BUFFER_DESC indexBufferDesc;
-	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
-
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(DWORD) * 6;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA indexData;
-	indexData.pSysMem = indices;
-	graphics->device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
-}
 Player::Player()
 {
 }
@@ -102,7 +78,7 @@ void Player::CreateDrawable()
 	vertices.push_back({ position							,Vector2(0,1) });
 	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
 
-	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), indexBuffer, vsConstantBuffers, psResourceViews);
+	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 
 
@@ -126,13 +102,13 @@ void Player::UpdateAnimation()
 		}
 		else if (playerMovement->IsGrounded())
 		{
-			if (kb.A || kb.D)
-			{
-				currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
-			}
-			else if (kb.Space)
+			if (kb.Space)
 			{
 				currentAnimation = jumpAnimation->Play(currentAnimationBuffer, currentAnimation);
+			}
+			else if (kb.A || kb.D)
+			{
+				currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
 			}
 			else
 			{

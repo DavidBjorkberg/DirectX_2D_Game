@@ -6,12 +6,13 @@
 #include"CollisionHandler.h"
 #include"Player.h"
 #include"LevelReader.h"
+#include"Enemy.h"
 #define STB_IMAGE_IMPLEMENTATION
 class LevelManager
 {
 public:
 	std::vector<LevelBlock*> level;
-
+	std::vector<Enemy*> enemies;
 	void Update(float deltaTime);
 	LevelManager();
 	LevelManager(Graphics* graphics,CollisionHandler* collisionHandler);

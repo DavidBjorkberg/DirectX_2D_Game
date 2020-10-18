@@ -9,7 +9,7 @@ class LevelReader
 {
 public:
 	Vector3 playerSpawnPos;
-
+	std::vector<Vector3> enemySpawnPos;
 	void AddBlock(int index, int width, int height);
 	void ReadLevel(const char* fileName);
 	LevelReader();

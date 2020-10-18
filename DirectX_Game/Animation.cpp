@@ -17,18 +17,26 @@ Animation::Animation(Graphics* graphics, AnimationType animationType)
 		FPS = 10;
 		loop = false;
 	}
-	else if (animationType == AnimationType::Idle)
+	else if (animationType == AnimationType::Death)
 	{
 		animationData.startFrameY = 1;
 	}
-	else if (animationType == AnimationType::Jump)
+	else if (animationType == AnimationType::Hit)
 	{
 		animationData.startFrameY = 2;
+	}
+	else if (animationType == AnimationType::Idle)
+	{
+		animationData.startFrameY = 3;
+	}
+	else if (animationType == AnimationType::Jump)
+	{
+		animationData.startFrameY = 4;
 		loop = false;
 	}
 	else if (animationType == AnimationType::Run)
 	{
-		animationData.startFrameY = 3;
+		animationData.startFrameY = 5;
 	}
 }
 
