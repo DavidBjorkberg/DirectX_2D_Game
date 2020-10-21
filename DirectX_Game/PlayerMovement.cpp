@@ -3,6 +3,7 @@
 PlayerMovement::PlayerMovement(Vector3 position, float width, float height, CollisionHandler* collisionHandler
 	, Animation** currentAnimation, ID3D11Buffer** currentAnimationBuffer, Graphics* graphics, DirectX::Keyboard* keyboard)
 {
+	this->position = position;
 	this->collisionHandler = collisionHandler;
 	this->graphics = graphics;
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
@@ -10,12 +11,9 @@ PlayerMovement::PlayerMovement(Vector3 position, float width, float height, Coll
 	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 	this->keyboard = keyboard;
 	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f, 0);
-	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, 0, 0), attackRange, attackHeight, -1);
+	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, attackHeight / 2, 0), attackRange, attackHeight, -1);
 
 	collisionHandler->AddCollider(collider);
-
-
-
 }
 void PlayerMovement::Update(float deltaTime, Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer)
 {
@@ -32,10 +30,11 @@ void PlayerMovement::Update(float deltaTime, Animation** currentAnimation, ID3D1
 void PlayerMovement::Move()
 {
 	Vector3 finalVelocity = (curVelocity)*deltaTime;
-	if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
+	if (canMove && collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
 	{
 		previousTranslation += finalVelocity;
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
+		position += finalVelocity;
 		collider->Move(finalVelocity);
 		attackCollider->Move(finalVelocity);
 		graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
@@ -171,12 +170,14 @@ void PlayerMovement::SwitchFacingDir()
 		previousTranslation += Vector3(-1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(Vector3(-0.4f, 0, 0));
+		attackCollider->Move(Vector3(-(1 + (attackRange / 2)), 0, 0));
 	}
 	else
 	{
 		previousTranslation += Vector3(1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(Vector3(0.4f, 0, 0));
+		attackCollider->Move(Vector3(1 + (attackRange / 2), 0, 0));
 	}
 	graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
 	facingRight = !facingRight;

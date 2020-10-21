@@ -8,11 +8,13 @@ using namespace DirectX::SimpleMath;
 class PlayerMovement
 {
 public:
-
+	Vector3 position;
 	ID3D11Buffer* moveBuffer;
 	ID3D11Buffer* facingDirBuffer;
 	CollisionHandler* collisionHandler;
 	BoxCollider* collider;
+	BoxCollider* attackCollider;
+	bool canMove = true;
 
 	void Update(float deltaTime, Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer);
 	bool IsGrounded();
@@ -29,7 +31,6 @@ private:
 	Vector3 curVelocity;
 	Vector3 previousTranslation;
 	Matrix moveMatrix = Matrix::Identity;
-	BoxCollider* attackCollider;
 	float attackRange = 1;
 	float attackHeight = 1;
 	bool canJump = true; 

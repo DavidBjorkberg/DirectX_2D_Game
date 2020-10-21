@@ -4,40 +4,15 @@ Animation::Animation()
 {
 }
 
-Animation::Animation(Graphics* graphics, AnimationType animationType)
+Animation::Animation(Graphics* graphics, AnimationType animationType, bool loop, int FPS)
 {
 	this->graphics = graphics;
 	this->animationType = animationType;
-	FPS = 5;
+	this->FPS = FPS;
+	this->loop = loop;
 	animationData.currentFrame = 0;
 	currentFrameTimer = 0;
-	if (animationType == AnimationType::Attack)
-	{
-		animationData.startFrameY = 0;
-		FPS = 10;
-		loop = false;
-	}
-	else if (animationType == AnimationType::Death)
-	{
-		animationData.startFrameY = 1;
-	}
-	else if (animationType == AnimationType::Hit)
-	{
-		animationData.startFrameY = 2;
-	}
-	else if (animationType == AnimationType::Idle)
-	{
-		animationData.startFrameY = 3;
-	}
-	else if (animationType == AnimationType::Jump)
-	{
-		animationData.startFrameY = 4;
-		loop = false;
-	}
-	else if (animationType == AnimationType::Run)
-	{
-		animationData.startFrameY = 5;
-	}
+	animationData.startFrameY = (int)animationType;
 }
 
 void Animation::Update(float deltaTime, ID3D11Buffer* animationBuffer)

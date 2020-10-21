@@ -86,19 +86,12 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-void Graphics::CreateDrawable(std::vector<LevelBlockVertex> vertices, ShaderClass* shaders
-	, ID3D11Buffer* vertexBuffer, UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
+int Graphics::CreateDrawable(std::vector<LevelBlockVertex> vertices, ShaderClass* shaders
+	, UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
 	, vector<ID3D11ShaderResourceView*> psResourceViews, vector<ID3D11Buffer*> psConstantBuffers)
 {
-	DrawableStruct* drawable = new DrawableStruct();
-	drawable->shaders = shaders;
-	drawable->vertexSize = vertexSize;
-	drawable->indexBuffer = indexBuffer;
-	drawable->vsConstantBuffers = vsConstantBuffers;
-	drawable->psConstantBuffers = psConstantBuffers;
-	drawable->psResourceViews = psResourceViews;
-	drawable->nrOfVertices = vertices.size();
-	
+	ID3D11Buffer* vertexBuffer;
+
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -109,9 +102,31 @@ void Graphics::CreateDrawable(std::vector<LevelBlockVertex> vertices, ShaderClas
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = vertices.data();
 	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
-	drawable->vertexBuffer = vertexBuffer;
 
+	DrawableStruct* drawable = new DrawableStruct();
+	drawable->shaders = shaders;
+	drawable->vertexSize = vertexSize;
+	drawable->indexBuffer = indexBuffer;
+	drawable->vsConstantBuffers = vsConstantBuffers;
+	drawable->psConstantBuffers = psConstantBuffers;
+	drawable->psResourceViews = psResourceViews;
+	drawable->nrOfVertices = vertices.size();
+	drawable->vertexBuffer = vertexBuffer;
+	drawable->index = drawables.size();
 	drawables.push_back(drawable);
+	return drawables.size() - 1;
+}
+
+void Graphics::RemoveDrawable(int index)
+{
+	for (int i = 0; i < drawables.size(); i++)
+	{
+		if (drawables[i]->index == index)
+		{
+			delete drawables[i];
+			drawables.erase(drawables.begin() + i);
+		}
+	}
 }
 
 void Graphics::Draw()
@@ -136,7 +151,7 @@ void Graphics::Draw()
 		{
 			deviceContext->PSSetShaderResources(j, 1, &drawables[i]->psResourceViews[j]);
 		}
-		          
+
 		deviceContext->PSSetSamplers(0, 1, &sampler);
 		UINT32 offset = 0;
 		deviceContext->IASetVertexBuffers(0, 1, &drawables[i]->vertexBuffer, &drawables[i]->vertexSize, &offset);

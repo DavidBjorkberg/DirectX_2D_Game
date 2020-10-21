@@ -1,44 +1,86 @@
 #include "Enemy.h"
 
-void Enemy::Update(float deltaTime)
+void Enemy::Update(Vector3 playerPos, float deltaTime, bool isPlayerAlive)
 {
+	this->damagedPlayer = false;
 	this->deltaTime = deltaTime;
 	ApplyGravity();
 	CheckNextFrameCollision();
 	UpdateAnimation();
+	if (isPlayerAlive)
+	{
+		ObservePlayer(playerPos);
+
+	}
 	Move();
 	ApplyGravity();
+}
+
+void Enemy::TakeDamage()
+{
+	currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
+	isWalking = false;
+	health--;
 }
 
 Enemy::Enemy()
 {
 }
 
-Enemy::Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
+Enemy::Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler, int enemyIndex)
 {
 	this->position = pos;
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
 
-	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/Enemy_SpriteSheet.png");
+	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/Small_Enemy_SpriteSheet.png");
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
 	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
-	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), modelWidth, modelHeight, 1);
+	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, attackHeight / 2, 0), attackRange, attackHeight, -1);
+	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), modelWidth, modelHeight, enemyIndex);
 	collisionHandler->AddCollider(collider);
 	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 	graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
 	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
-	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack);
+	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack, false);
+	hitAnimation = new Animation(graphics, Animation::AnimationType::Hit, false, 20);
+
 	currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
 	curVelocity.x = 1;
+
 	InitializeShaders();
 	CreateDrawable();
 }
 void Enemy::UpdateAnimation()
 {
+	switch (currentAnimation->animationType)
+	{
+	case Animation::AnimationType::Hit:
+		if (!currentAnimation->isPlaying)
+		{
+			if (health <= 0)
+			{
+				isToBeRemoved = true;
+			}
+			else
+			{
+				isWalking = true;
+				currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
+			}
+		}
+		break;
+	case Animation::AnimationType::Attack:
+		if (!currentAnimation->isPlaying)
+		{
+			isWalking = true;
+			currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
+		}
+		break;
+	default:
+		break;
+	}
 	currentAnimation->Update(deltaTime, currentAnimationBuffer);
-
 }
 void Enemy::SwitchWalkingDir()
 {
@@ -47,12 +89,15 @@ void Enemy::SwitchWalkingDir()
 		previousTranslation += Vector3(-1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(Vector3(-0.4f, 0, 0));
+		attackCollider->Move(Vector3(-(1 + (attackRange / 2)), 0, 0));
 	}
 	else
 	{
 		previousTranslation += Vector3(1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
 		collider->Move(Vector3(0.4f, 0, 0));
+		attackCollider->Move(Vector3((1 + (attackRange / 2)), 0, 0));
+
 	}
 	facingRight = !facingRight;
 	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
@@ -91,14 +136,14 @@ void Enemy::CheckNextFrameCollision()
 	}
 	if (facingRight)
 	{
-		if (!collisionHandler->IsPointCollidingWithLevel(position + Vector3(modelWidth,-1.0f,0)))
+		if (!collisionHandler->IsPointCollidingWithLevel(position + Vector3(modelWidth, -1.0f, 0)))
 		{
 			SwitchWalkingDir();
 		}
 	}
 	else
 	{
-		if (!collisionHandler->IsPointCollidingWithLevel(position + Vector3(0,-1.0f,0)))
+		if (!collisionHandler->IsPointCollidingWithLevel(position + Vector3(0, -1.0f, 0)))
 		{
 			SwitchWalkingDir();
 		}
@@ -121,23 +166,68 @@ void Enemy::CreateDrawable()
 	vertices.push_back({ position							,Vector2(0,1) });
 	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
 
-	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
+	drawableIndex = graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 
 void Enemy::Move()
 {
-	Vector3 finalVelocity = (curVelocity)*deltaTime;
-	if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
+	if (isWalking)
 	{
-		previousTranslation += finalVelocity;
-		moveMatrix = Matrix::CreateTranslation(previousTranslation);
-		position += finalVelocity;
-		collider->Move(finalVelocity);
-		graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
+		Vector3 finalVelocity = (curVelocity)*deltaTime;
+		if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
+		{
+			previousTranslation += finalVelocity;
+			moveMatrix = Matrix::CreateTranslation(previousTranslation);
+			position += finalVelocity;
+			collider->Move(finalVelocity);
+			attackCollider->Move(finalVelocity);
+			graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
+		}
 	}
 }
 
 bool Enemy::IsGrounded()
 {
 	return collisionHandler->isCollidingAfterMove(collider, Vector3::Down * 0.1f) && curVelocity.y <= 0;
+}
+
+void Enemy::ObservePlayer(Vector3 playerPos)
+{
+	float xDistance = abs(playerPos.x - position.x);
+	float yDistance = abs(playerPos.y - position.y);
+	if (yDistance < 1 && xDistance <= detectionRange)
+	{
+		if (facingRight)
+		{
+			if (position.x > playerPos.x)
+			{
+				SwitchWalkingDir();
+			}
+		}
+		else
+		{
+			if (position.x < playerPos.x)
+			{
+				SwitchWalkingDir();
+			}
+		}
+		if (xDistance < attackRange)
+		{
+			Attack();
+		}
+	}
+}
+
+void Enemy::Attack()
+{
+	if (currentAnimation->animationType != Animation::AnimationType::Attack)
+	{
+		isWalking = false;
+		currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
+		std::vector<BoxCollider*> hits = collisionHandler->GetCollisions(attackCollider);
+		for (int i = 0; i < hits.size() && !damagedPlayer; i++)
+		{
+			damagedPlayer = hits[i]->unitIndex == 0;
+		}
+	}
 }

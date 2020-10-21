@@ -11,33 +11,34 @@ using namespace DirectX::SimpleMath;
 class Player
 {
 public:
-	ID3D11Buffer* vertexBuffer;
+	PlayerMovement* playerMovement;
+	void TakeDamage();
 	std::vector<int> GetEnemyHitIndices();
 	void UpdateAnimation();
 	void Update(float deltaTime);
+	bool IsAlive();
 	Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler);
 	Player();
 
 private:
-	Animation* jumpAnimation;//
-	Animation* idleAnimation;//
-	Animation* runAnimation;// 
-	Animation* attackAnimation;// 
+	Animation* jumpAnimation;
+	Animation* idleAnimation;
+	Animation* runAnimation;
+	Animation* attackAnimation;
+	Animation* hitAnimation;
+	Animation* deathAnimation;
 	std::unique_ptr<DirectX::Keyboard> keyboard;
 	Texture texture;
 	ShaderClass* shaders;
 	Graphics* graphics;
-	Vector3 position;
 	Animation* currentAnimation;
 	ID3D11Buffer* currentAnimationBuffer;
-	PlayerMovement* playerMovement;
 	std::vector<int> hitEnemyIndices;
 	float width = 2;
 	float height = 2;
+	int health = 2;
 	float deltaTime;
-	bool isAttacking;
 	void Attack();
-
 	void InitializeShaders();
-	void CreateDrawable();
+	void CreateDrawable(Vector3 position);
 };

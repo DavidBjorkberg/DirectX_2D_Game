@@ -3,16 +3,7 @@
 void LevelManager::Update(float deltaTime)
 {
 	player.Update(deltaTime);
-	
-	std::vector<int> hitEnemyIndices = player.GetEnemyHitIndices();
-	for (int i = 0; i < hitEnemyIndices.size(); i++)
-	{
-		//Deal damage
-	}
-	for (int i = 0; i < enemies.size(); i++)
-	{
-		enemies[i]->Update(deltaTime);
-	}
+	UpdateEnemies(deltaTime);
 }
 
 LevelManager::LevelManager()
@@ -28,7 +19,7 @@ LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandle
 	player = Player(levelReader->playerSpawnPos, graphics, collisionHandler);
 	for (int i = 0; i < levelReader->enemySpawnPos.size(); i++)
 	{
-		enemies.push_back(new Enemy(levelReader->enemySpawnPos[i], graphics, collisionHandler));
+		enemies.push_back(new Enemy(levelReader->enemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
 	}
 	InitializeColliders();
 }
@@ -39,7 +30,42 @@ void LevelManager::InitializeColliders()
 	{
 		this->collisionHandler->AddCollider(level[i]->collider);
 	}
-	
+}
+
+void LevelManager::UpdateEnemies(float deltaTime)
+{
+	std::vector<int> hitEnemyIndices = player.GetEnemyHitIndices();
+	for (int i = 0; i < hitEnemyIndices.size(); i++)
+	{
+		for (int j = 0; j < enemies.size(); j++)
+		{
+			if (enemies[j]->collider->unitIndex == hitEnemyIndices[i])
+			{
+				enemies[j]->TakeDamage();
+			}
+		}
+	}
+	for (int i = enemies.size() - 1; i >= 0; i--)
+	{
+		if (enemies[i]->isToBeRemoved)
+		{
+			graphics->RemoveDrawable(enemies[i]->drawableIndex);
+			collisionHandler->RemoveCollider(enemies[i]->collider);
+			delete enemies[i];
+			enemies.erase(enemies.begin() + i);
+		}
+		else
+		{
+			enemies[i]->Update(player.playerMovement->position, deltaTime, player.IsAlive());
+		}
+	}
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		if (enemies[i]->damagedPlayer)
+		{
+			player.TakeDamage();
+		}
+	}
 }
 
 

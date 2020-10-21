@@ -5,6 +5,19 @@ void CollisionHandler::AddCollider(BoxCollider* collider)
 	this->colliders.push_back(collider);
 }
 
+void CollisionHandler::RemoveCollider(BoxCollider* collider)
+{
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		if (collider == colliders[i])
+		{
+			colliders.erase(colliders.begin() + i);
+			delete collider;
+			break;
+		}
+	}
+}
+
 bool CollisionHandler::isColliding(BoxCollider* collider)
 {
 	for (int i = 0; i < colliders.size(); i++)

@@ -16,7 +16,6 @@ private:
 	float* deltaTime;
 	Texture backgroundTexture;
 	ShaderClass backgroundShaders;
-	ID3D11Buffer* bgVertexBuffer;
 	LevelManager levelManager;
 	Graphics graphics;
 	CollisionHandler collisionHandler;

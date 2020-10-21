@@ -227,8 +227,7 @@ void LevelReader::CreateLevelDrawables()
 		psConstantBuffer.push_back(levelPtr->at(i)->dimensionsBuffer);
 
 
-		graphics->CreateDrawable(vertices, levelBlockShaders, levelPtr->at(i)->vertexBuffer
-			, sizeof(Graphics::LevelBlockVertex)
+		graphics->CreateDrawable(vertices, levelBlockShaders, sizeof(Graphics::LevelBlockVertex)
 			, nullptr, vsConstantBuffers, psResourceViews, psConstantBuffer);
 
 	}

@@ -22,4 +22,5 @@ private:
 	LevelReader* levelReader;
 	Player player;
 	void InitializeColliders();
+	void UpdateEnemies(float deltaTime);
 };

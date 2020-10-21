@@ -23,6 +23,7 @@ public:
 		vector<ID3D11Buffer*> vsConstantBuffers;
 		vector<ID3D11Buffer*> psConstantBuffers;
 		vector<ID3D11ShaderResourceView*> psResourceViews;
+		int index;
 	};
 	ID3D11RenderTargetView* renderTargetView = nullptr;
 	ID3D11Device* device;
@@ -32,9 +33,10 @@ public:
 	ID3D11Buffer* squareIndexBuffer;
 
 	bool Init();
-	void CreateDrawable(std::vector<LevelBlockVertex> vertices,ShaderClass* shaders, ID3D11Buffer* vertexBuffer
-		,UINT vertexSize,ID3D11Buffer* indexBuffer,vector<ID3D11Buffer*> vsConstantBuffers = vector<ID3D11Buffer*>()
+	int CreateDrawable(std::vector<LevelBlockVertex> vertices,ShaderClass* shaders,UINT vertexSize
+		,ID3D11Buffer* indexBuffer,vector<ID3D11Buffer*> vsConstantBuffers = vector<ID3D11Buffer*>()
 		, vector<ID3D11ShaderResourceView*> psResourceViews = vector<ID3D11ShaderResourceView*>(), vector<ID3D11Buffer*> psConstantBuffers = vector<ID3D11Buffer*>());
+	void RemoveDrawable(int index);
 	void Draw();
 	void MoveCamera(float x, float y);
 	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size); 

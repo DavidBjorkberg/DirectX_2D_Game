@@ -6,16 +6,16 @@ class Animation
 public:
 	enum class AnimationType
 	{
-		Attack, Idle, Jump, Run,Hit,Death
+		Attack, Death, Hit, Idle, Jump, Run,
 	};
 	Animation* Play(ID3D11Buffer* animationBuffer, Animation* currentAnimation);
 	bool isPlaying;
-	bool loop = true;
+	bool loop;
 	AnimationType animationType;
 
 	void Update(float deltaTime, ID3D11Buffer* animationBuffer);
 	Animation();
-	Animation(Graphics* graphics, AnimationType animationType);
+	Animation(Graphics* graphics, AnimationType animationType, bool loop = true, int FPS = 5);
 private:
 	struct AnimationData
 	{

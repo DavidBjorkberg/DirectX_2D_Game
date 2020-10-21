@@ -13,7 +13,6 @@ public:
 		float width;
 		float height;
 	};
-	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* dimensionsBuffer;
 	BoxCollider* collider;
 	Texture texture;

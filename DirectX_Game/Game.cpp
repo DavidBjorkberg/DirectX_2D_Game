@@ -53,7 +53,7 @@ void Game::CreateBackground()
 	vector<ID3D11ShaderResourceView*> psResourceViews;
 	psResourceViews.push_back(backgroundTexture.GetResourceView());
 
-	graphics.CreateDrawable(vertices, &backgroundShaders, bgVertexBuffer, sizeof(Graphics::LevelBlockVertex)
+	graphics.CreateDrawable(vertices, &backgroundShaders, sizeof(Graphics::LevelBlockVertex)
 		, graphics.squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 

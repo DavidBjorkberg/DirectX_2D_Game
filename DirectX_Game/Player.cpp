@@ -2,9 +2,22 @@
 
 void Player::Update(float deltaTime)
 {
+	hitEnemyIndices.clear();
 	this->deltaTime = deltaTime;
+	if (keyboard->GetState().X && currentAnimation->animationType != Animation::AnimationType::Attack)
+	{
+		Attack();
+	}
 	UpdateAnimation();
-	playerMovement->Update (deltaTime, &currentAnimation, currentAnimationBuffer);
+	if (IsAlive())
+	{
+		playerMovement->Update(deltaTime, &currentAnimation, currentAnimationBuffer);
+	}
+}
+
+bool Player::IsAlive()
+{
+	return health > 0;
 }
 
 std::vector<int> Player::GetEnemyHitIndices()
@@ -16,7 +29,6 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 {
 	keyboard = std::make_unique<DirectX::Keyboard>();
 
-	this->position = pos;
 	this->graphics = graphics;
 
 	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/Player_SpriteSheet.png");
@@ -24,12 +36,14 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 
 	InitializeShaders();
 	playerMovement = new PlayerMovement(pos, width, height, collisionHandler, &currentAnimation, &currentAnimationBuffer, graphics, keyboard.get());
-	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump);
+	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump, false);
 	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
 	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
-	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack);
+	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack, false, 10);
+	hitAnimation = new Animation(graphics, Animation::AnimationType::Hit, false, 20);
+	deathAnimation = new Animation(graphics, Animation::AnimationType::Death, false);
 	currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
-	CreateDrawable();
+	CreateDrawable(pos);
 
 }
 
@@ -38,7 +52,7 @@ Player::Player()
 }
 void Player::Attack()
 {
-	std::vector<BoxCollider*> hits = playerMovement->collisionHandler->GetCollisions(playerMovement->collider);
+	std::vector<BoxCollider*> hits = playerMovement->collisionHandler->GetCollisions(playerMovement->attackCollider);
 
 	for (int i = 0; i < hits.size(); i++)
 	{
@@ -46,6 +60,20 @@ void Player::Attack()
 		{
 			hitEnemyIndices.push_back(hits[i]->unitIndex);
 		}
+	}
+}
+
+void Player::TakeDamage()
+{
+	health--;
+	playerMovement->canMove = false;
+	if (health > 0)
+	{
+		currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
+	}
+	else
+	{
+		currentAnimation = deathAnimation->Play(currentAnimationBuffer, currentAnimation);
 	}
 }
 
@@ -62,7 +90,7 @@ void Player::InitializeShaders()
 	shaders->CreatePS(graphics->device, L"PlayerPixel.hlsl");
 }
 
-void Player::CreateDrawable()
+void Player::CreateDrawable(Vector3 position)
 {
 	vector<ID3D11Buffer*> vsConstantBuffers;
 	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
@@ -78,7 +106,7 @@ void Player::CreateDrawable()
 	vertices.push_back({ position							,Vector2(0,1) });
 	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
 
-	graphics->CreateDrawable(vertices, shaders, vertexBuffer, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
+	graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 
 
@@ -91,14 +119,21 @@ void Player::UpdateAnimation()
 		if (!currentAnimation->isPlaying)
 		{
 			currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
-			isAttacking = false;
 		}
+		break;
+	case Animation::AnimationType::Hit:
+		if (!currentAnimation->isPlaying)
+		{
+			currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
+			playerMovement->canMove = true;
+		}
+		break;
+	case Animation::AnimationType::Death:
 		break;
 	default:
 		if (kb.X)
 		{
 			currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
-			isAttacking = true;
 		}
 		else if (playerMovement->IsGrounded())
 		{
