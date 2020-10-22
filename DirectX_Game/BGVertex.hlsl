@@ -16,8 +16,6 @@ cbuffer vsBuffer : register(b0)
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output;
-	float4x4 viewProjTrans = transpose(viewProj);
-	//output.position = mul(float4(input.position, 1), viewProjTrans);
 	output.position = float4(input.position, 1);
 	output.uv = input.uv;
 	return output;

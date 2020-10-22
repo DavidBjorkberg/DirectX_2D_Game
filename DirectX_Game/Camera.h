@@ -9,8 +9,9 @@ public:
 	Matrix GetViewMatrix();
 	ID3D11Buffer* GetViewProjBuffer();
 	ID3D11Buffer* viewProjBuffer;
+	ID3D11Buffer* worldBuffer;
 	void Move(float x, float y);
-	void Init();
+	void Init(Vector3 playerPos);
 	Camera();
 	Camera(ID3D11DeviceContext* deviceContext);
 private:
@@ -19,5 +20,6 @@ private:
 	Matrix viewMatrix;
 	Matrix projMatrix;
 	Matrix viewProj;
+	Matrix worldMatrix = Matrix::Identity;
 	ID3D11DeviceContext* deviceContext;
 };

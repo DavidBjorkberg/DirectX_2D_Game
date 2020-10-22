@@ -14,6 +14,7 @@ class LevelManager
 public:
 	std::vector<LevelBlock*> level;
 	std::vector<Enemy*> enemies;
+	Player player;
 	void Update(float deltaTime);
 	LevelManager();
 	LevelManager(Graphics* graphics,CollisionHandler* collisionHandler);
@@ -21,7 +22,6 @@ private:
 	Graphics* graphics;
 	CollisionHandler* collisionHandler;
 	LevelReader* levelReader;
-	Player player;
 	void InitializeColliders();
 	void UpdateEnemies(float deltaTime);
 };

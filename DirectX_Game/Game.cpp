@@ -6,6 +6,8 @@ void Game::Initialize(HWND handle)
 	graphics = Graphics(handle);
 	CreateBackground();
 	levelManager = LevelManager(&graphics, &collisionHandler);
+	graphics.camera.Init(levelManager.player.playerMovement->position);
+
 }
 
 void Game::Update()

@@ -40,7 +40,7 @@ Graphics::Graphics(HWND handle)
 	Init();
 	camera = Camera(deviceContext);
 	CreateConstantBuffer(&camera.viewProjBuffer, sizeof(Matrix));
-	camera.Init();
+	CreateConstantBuffer(&camera.worldBuffer, sizeof(Matrix));
 }
 
 Graphics::Graphics()

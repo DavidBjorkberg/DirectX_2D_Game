@@ -30,10 +30,15 @@ void PlayerMovement::Update(float deltaTime, Animation** currentAnimation, ID3D1
 void PlayerMovement::Move()
 {
 	Vector3 finalVelocity = (curVelocity)*deltaTime;
-	if (canMove && collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
+	if (!canMove)
+	{
+		finalVelocity.x = 0;
+	}
+	if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
 	{
 		previousTranslation += finalVelocity;
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
+		graphics->MoveCamera(finalVelocity.x, finalVelocity.y);
 		position += finalVelocity;
 		collider->Move(finalVelocity);
 		attackCollider->Move(finalVelocity);
