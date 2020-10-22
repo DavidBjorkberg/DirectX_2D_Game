@@ -17,13 +17,16 @@ LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandle
 	this->collisionHandler = collisionHandler;
 	levelReader->ReadLevel("Textures/Level.png");
 	player = Player(levelReader->playerSpawnPos, graphics, collisionHandler);
-	for (int i = 0; i < levelReader->enemySpawnPos.size(); i++)
+	for (int i = 0; i < levelReader->tallEnemySpawnPos.size(); i++)
 	{
-		enemies.push_back(new Enemy(levelReader->enemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
+		enemies.push_back(new TallBoyEnemy(levelReader->tallEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
+	}
+	for (int i = 0; i < levelReader->shortEnemySpawnPos.size(); i++)
+	{
+		enemies.push_back(new ShortBoyEnemy(levelReader->shortEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
 	}
 	InitializeColliders();
 }
-
 void LevelManager::InitializeColliders()
 {
 	for (int i = 0; i < level.size(); i++)

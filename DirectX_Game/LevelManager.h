@@ -6,7 +6,8 @@
 #include"CollisionHandler.h"
 #include"Player.h"
 #include"LevelReader.h"
-#include"Enemy.h"
+#include"TallBoyEnemy.h"
+#include"ShortBoyEnemy.h"
 #define STB_IMAGE_IMPLEMENTATION
 class LevelManager
 {

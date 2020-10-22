@@ -10,7 +10,6 @@ void Enemy::Update(Vector3 playerPos, float deltaTime, bool isPlayerAlive)
 	if (isPlayerAlive)
 	{
 		ObservePlayer(playerPos);
-
 	}
 	Move();
 	ApplyGravity();
@@ -27,21 +26,23 @@ Enemy::Enemy()
 {
 }
 
-Enemy::Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler, int enemyIndex)
+Enemy::Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
 {
 	this->position = pos;
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
-
-	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/Small_Enemy_SpriteSheet.png");
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
 	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
+	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
+	graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
+}
+void Enemy::Init(int enemyIndex, std::string filepath)
+{
+	texture.Initialize(graphics->device, graphics->deviceContext, filepath);
 	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, attackHeight / 2, 0), attackRange, attackHeight, -1);
 	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), modelWidth, modelHeight, enemyIndex);
 	collisionHandler->AddCollider(collider);
-	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
-	graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
 	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
 	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack, false);
 	hitAnimation = new Animation(graphics, Animation::AnimationType::Hit, false, 20);
@@ -220,7 +221,8 @@ void Enemy::ObservePlayer(Vector3 playerPos)
 
 void Enemy::Attack()
 {
-	if (currentAnimation->animationType != Animation::AnimationType::Attack)
+	if (currentAnimation->animationType != Animation::AnimationType::Attack
+		&& currentAnimation->animationType != Animation::AnimationType::Hit)
 	{
 		isWalking = false;
 		currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);

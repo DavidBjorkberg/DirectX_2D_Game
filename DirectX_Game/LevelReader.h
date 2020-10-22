@@ -9,7 +9,8 @@ class LevelReader
 {
 public:
 	Vector3 playerSpawnPos;
-	std::vector<Vector3> enemySpawnPos;
+	std::vector<Vector3> tallEnemySpawnPos;
+	std::vector<Vector3> shortEnemySpawnPos;
 	void AddBlock(int index, int width, int height);
 	void ReadLevel(const char* fileName);
 	LevelReader();
@@ -17,7 +18,7 @@ public:
 private:
 	enum class PixelType
 	{
-		Background, Block, Player, Enemy
+		Background, Block, Player, TallEnemy,ShortEnemy
 	};
 
 	Vector3 topLeftOfWindow = Vector3(-10.2f, 10.2f, 0);

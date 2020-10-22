@@ -11,11 +11,19 @@ public:
 	BoxCollider* collider;
 	bool isToBeRemoved;
 	bool damagedPlayer;
-	void Update(Vector3 playerPos,float deltaTime, bool isPlayerAlive);
+	void Update(Vector3 playerPos, float deltaTime, bool isPlayerAlive);
 	void TakeDamage();
 	int drawableIndex;
 	Enemy();
-	Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler,int enemyIndex);
+	Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler);
+protected:
+	void Init(int enemyIndex, std::string filepath);
+	float width = 2;
+	float height = 2;
+	float modelWidth = 0.6f;
+	float modelHeight = 1.2f;
+	float attackRange = 1.2f;
+	float attackHeight = 1;
 private:
 	Texture texture;
 	ShaderClass* shaders;
@@ -33,12 +41,6 @@ private:
 	ID3D11Buffer* currentAnimationBuffer;
 	ID3D11Buffer* facingDirBuffer;
 	Matrix moveMatrix = Matrix::Identity;
-	float width = 2;
-	float height = 2;
-	float modelWidth = 0.6f;
-	float modelHeight = 1.2f;
-	float attackRange = 1;
-	float attackHeight = 1;
 	float detectionRange = 4;
 	float gravity = 6;
 	float deltaTime;
