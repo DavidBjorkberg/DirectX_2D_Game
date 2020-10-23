@@ -40,7 +40,7 @@ void Camera::Move(float x, float y)
 
 void Camera::Init(Vector3 playerPos)
 {
-	this->position = Vector3(playerPos.x, playerPos.y, -1);
+	this->position = Vector3(playerPos.x, playerPos.y + 6, -1);
 	projMatrix = DirectX::XMMatrixOrthographicLH(20,20, 0.1f, 20.0f);
 	D3D11_MAPPED_SUBRESOURCE mappedMemory;
 	HRESULT hr = deviceContext->Map(worldBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);

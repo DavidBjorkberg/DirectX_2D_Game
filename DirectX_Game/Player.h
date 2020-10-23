@@ -11,7 +11,11 @@ using namespace DirectX::SimpleMath;
 class Player
 {
 public:
+	ID3D11Buffer* healthBuffer;
 	PlayerMovement* playerMovement;
+	float maxHealth = 5;
+	float currentHealth;
+	float healthPercent;
 	void TakeDamage();
 	std::vector<int> GetEnemyHitIndices();
 	void UpdateAnimation();
@@ -33,10 +37,10 @@ private:
 	Graphics* graphics;
 	Animation* currentAnimation;
 	ID3D11Buffer* currentAnimationBuffer;
+
 	std::vector<int> hitEnemyIndices;
 	float width = 2;
 	float height = 2;
-	int health = 2;
 	float deltaTime;
 	void Attack();
 	void InitializeShaders();

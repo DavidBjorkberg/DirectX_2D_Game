@@ -37,7 +37,6 @@ float deltaTime = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	MSG msg = { 0 };
 	HWND wndHandle = InitWindow(hInstance);
 	Game game(&deltaTime);
@@ -73,15 +72,15 @@ HWND InitWindow(HINSTANCE hInstance)
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;
 	wcex.hInstance = hInstance;
-	wcex.lpszClassName = L"DirectX Renderer";
+	wcex.lpszClassName = L"DirectX 2D-Game";
 	RegisterClassEx(&wcex);
 
 	RECT rc = { 0, 0, 1080, 720 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
 	HWND handle = CreateWindow(
-		L"DirectX Renderer",
-		L"DirectX Renderer",
+		L"DirectX 2D-Game",
+		L"DirectX 2D-Game",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,

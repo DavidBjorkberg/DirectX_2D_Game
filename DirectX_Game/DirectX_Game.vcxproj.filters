@@ -136,16 +136,22 @@
     <FxCompile Include="PlayerPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="BGVertex.hlsl">
+    <FxCompile Include="EnemyVertex.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="EnemyPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
     <FxCompile Include="BGPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="EnemyVertex.hlsl">
+    <FxCompile Include="BGVertex.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="EnemyPixel.hlsl">
+    <FxCompile Include="HealthUIVertex.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="HealthUIPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
   </ItemGroup>

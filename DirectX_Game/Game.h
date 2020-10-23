@@ -15,10 +15,13 @@ public:
 private:
 	float* deltaTime;
 	Texture backgroundTexture;
+	Texture fullHeartsTexture;
+	Texture emptyHeartsTexture;
 	ShaderClass backgroundShaders;
+	ShaderClass healthUIShaders;
 	LevelManager levelManager;
 	Graphics graphics;
 	CollisionHandler collisionHandler;
-	void DrawScene();
 	void CreateBackground();
+	void CreateHealthUI();
 };

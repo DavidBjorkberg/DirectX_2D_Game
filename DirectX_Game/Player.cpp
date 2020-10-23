@@ -17,7 +17,7 @@ void Player::Update(float deltaTime)
 
 bool Player::IsAlive()
 {
-	return health > 0;
+	return currentHealth > 0;
 }
 
 std::vector<int> Player::GetEnemyHitIndices()
@@ -28,11 +28,14 @@ std::vector<int> Player::GetEnemyHitIndices()
 Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
 {
 	keyboard = std::make_unique<DirectX::Keyboard>();
-
+	currentHealth = maxHealth;
+	healthPercent = 1;
 	this->graphics = graphics;
 
 	texture.Initialize(graphics->device, graphics->deviceContext, "Textures/Player_SpriteSheet.png");
+	graphics->CreateConstantBuffer(&healthBuffer, 16);
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
+	graphics->MapToBuffer(healthBuffer, &healthPercent, sizeof(float));
 
 	InitializeShaders();
 	playerMovement = new PlayerMovement(pos, width, height, collisionHandler, &currentAnimation, &currentAnimationBuffer, graphics, keyboard.get());
@@ -65,9 +68,11 @@ void Player::Attack()
 
 void Player::TakeDamage()
 {
-	health--;
+	currentHealth -= 2;
 	playerMovement->canMove = false;
-	if (health > 0)
+	healthPercent = currentHealth / maxHealth;
+	graphics->MapToBuffer(healthBuffer, &healthPercent, sizeof(float));
+	if (currentHealth > 0)
 	{
 		currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
 	}
