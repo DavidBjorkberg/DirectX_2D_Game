@@ -1,8 +1,8 @@
 #include "LevelManager.h"
 
-void LevelManager::Update(float deltaTime)
+void LevelManager::UpdateComponents(float deltaTime)
 {
-	player.Update(deltaTime);
+	player.UpdateComponents(deltaTime);
 	UpdateEnemies(deltaTime);
 }
 
@@ -16,7 +16,7 @@ LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandle
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
 	levelReader->ReadLevel("Textures/Level.png");
-	player = Player(levelReader->playerSpawnPos, graphics, collisionHandler);
+	player = new PlayerGameObject(levelReader->playerSpawnPos, graphics, collisionHandler);
 	for (int i = 0; i < levelReader->tallEnemySpawnPos.size(); i++)
 	{
 		enemies.push_back(new TallBoyEnemy(levelReader->tallEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
@@ -59,7 +59,7 @@ void LevelManager::UpdateEnemies(float deltaTime)
 		}
 		else
 		{
-			enemies[i]->Update(player.playerMovement->position, deltaTime, player.IsAlive());
+			enemies[i]->UpdateComponents(player.playerMovement->position, deltaTime, player.IsAlive());
 		}
 	}
 	for (int i = 0; i < enemies.size(); i++)

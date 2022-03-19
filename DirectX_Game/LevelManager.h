@@ -8,14 +8,15 @@
 #include"LevelReader.h"
 #include"TallBoyEnemy.h"
 #include"ShortBoyEnemy.h"
+#include "PlayerGameObject.h"
 #define STB_IMAGE_IMPLEMENTATION
 class LevelManager
 {
 public:
 	std::vector<LevelBlock*> level;
 	std::vector<Enemy*> enemies;
-	Player player;
-	void Update(float deltaTime);
+	PlayerGameObject* player;
+	void UpdateComponents(float deltaTime);
 	LevelManager();
 	LevelManager(Graphics* graphics,CollisionHandler* collisionHandler);
 private:

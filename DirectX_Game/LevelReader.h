@@ -4,6 +4,7 @@
 #include "stb_image.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include<vector>
+#include<map>
 using namespace DirectX::SimpleMath;
 class LevelReader
 {
@@ -11,6 +12,7 @@ public:
 	Vector3 playerSpawnPos;
 	std::vector<Vector3> tallEnemySpawnPos;
 	std::vector<Vector3> shortEnemySpawnPos;
+
 	void AddBlock(int index, int width, int height);
 	void ReadLevel(const char* fileName);
 	LevelReader();
@@ -18,16 +20,17 @@ public:
 private:
 	enum class PixelType
 	{
-		Background, Block, Player, TallEnemy,ShortEnemy
+		Background, Block, PlayerComponent, TallEnemy, ShortEnemy
 	};
+	std::map<Color, PixelType> colorTranslationPair;
+	Vector3* topLeftOfWindow = new Vector3(-10.2f, 10.2f, 0);
 
-	Vector3 topLeftOfWindow = Vector3(-10.2f, 10.2f, 0);
 	unsigned char* rgb;
-	int gridSizeX = 5;
-	int gridSizeY = 5;
+	int levelSizeX;
+	int levelSizeY;
 
 	ShaderClass* levelBlockShaders;
-	std::vector<LevelBlock*>* levelPtr;
+	std::vector<LevelBlock*>* levelBlocks;
 	Graphics* graphics;
 
 	int GetObjectHeight(int startIndex, PixelType type);
