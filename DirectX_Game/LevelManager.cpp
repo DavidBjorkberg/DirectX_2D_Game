@@ -2,7 +2,7 @@
 
 void LevelManager::UpdateComponents(float deltaTime)
 {
-	player.UpdateComponents(deltaTime);
+	player->Update(deltaTime);
 	UpdateEnemies(deltaTime);
 }
 
@@ -16,7 +16,7 @@ LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandle
 	this->graphics = graphics;
 	this->collisionHandler = collisionHandler;
 	levelReader->ReadLevel("Textures/Level.png");
-	player = new PlayerGameObject(levelReader->playerSpawnPos, graphics, collisionHandler);
+	player = new Player(levelReader->playerSpawnPos, graphics, collisionHandler);
 	for (int i = 0; i < levelReader->tallEnemySpawnPos.size(); i++)
 	{
 		enemies.push_back(new TallBoyEnemy(levelReader->tallEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
@@ -37,7 +37,7 @@ void LevelManager::InitializeColliders()
 
 void LevelManager::UpdateEnemies(float deltaTime)
 {
-	std::vector<int> hitEnemyIndices = player.GetEnemyHitIndices();
+	std::vector<int> hitEnemyIndices = player->GetEnemyHitIndices();
 	for (int i = 0; i < hitEnemyIndices.size(); i++)
 	{
 		for (int j = 0; j < enemies.size(); j++)
@@ -59,14 +59,14 @@ void LevelManager::UpdateEnemies(float deltaTime)
 		}
 		else
 		{
-			enemies[i]->UpdateComponents(player.playerMovement->position, deltaTime, player.IsAlive());
+			enemies[i]->Update(player->playerMovement->position, deltaTime, player->IsAlive());
 		}
 	}
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		if (enemies[i]->damagedPlayer)
 		{
-			player.TakeDamage();
+			player->TakeDamage();
 		}
 	}
 }

@@ -6,14 +6,14 @@ void Game::Initialize(HWND handle)
 	graphics = Graphics(handle);
 	CreateBackground();
 	levelManager = LevelManager(&graphics, &collisionHandler);
-	graphics.camera.Init(levelManager.player.playerMovement->position);
+	graphics.camera.Init(levelManager.player->playerMovement->position);
 	CreateHealthUI();
 
 }
 
 void Game::Update()
 {
-	levelManager.Update(*deltaTime);
+	levelManager.UpdateComponents(*deltaTime);
 	graphics.Update();
 }
 Game::Game()
@@ -72,7 +72,7 @@ void Game::CreateHealthUI()
 	vertices.push_back({ Vector3(1.0f,1.0f,0),Vector2(1,0), });
 
 	vector<ID3D11Buffer*> psConstantBuffers;
-	psConstantBuffers.push_back(levelManager.player.healthBuffer);
+	psConstantBuffers.push_back(levelManager.player->healthBuffer);
 	vector<ID3D11ShaderResourceView*> psResourceViews;
 	psResourceViews.push_back(fullHeartsTexture.GetResourceView());
 	psResourceViews.push_back(emptyHeartsTexture.GetResourceView());
