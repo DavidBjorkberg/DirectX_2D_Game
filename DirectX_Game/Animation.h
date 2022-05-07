@@ -1,6 +1,8 @@
 #pragma once
 #include<d3d11.h>
 #include"Graphics.h"
+#include <map>
+#include <functional>
 class Animation
 {
 public:
@@ -8,11 +10,11 @@ public:
 	{
 		Attack, Death, Hit, Idle, Jump, Run,
 	};
-	Animation* Play(ID3D11Buffer* animationBuffer, Animation* currentAnimation);
+	std::vector <std::pair<std::function<bool()>, Animation*>> transitionPairs; 
+	Animation* Play(ID3D11Buffer* animationBuffer);
 	bool isPlaying;
 	bool loop;
 	AnimationType animationType;
-
 	void Update(float deltaTime, ID3D11Buffer* animationBuffer);
 	Animation();
 	Animation(Graphics* graphics, AnimationType animationType, bool loop = true, int FPS = 5);

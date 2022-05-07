@@ -36,19 +36,17 @@ void Animation::Update(float deltaTime, ID3D11Buffer* animationBuffer)
 		{
 			currentFrameTimer = 0;
 			animationData.currentFrame++;
+			
 			graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
 		}
 	}
 }
 
-Animation* Animation::Play(ID3D11Buffer* animationBuffer, Animation* currentAnimation)
+Animation* Animation::Play(ID3D11Buffer* animationBuffer)
 {
-	if (currentAnimation != this)
-	{
-		isPlaying = true;
-		currentFrameTimer = 0;
-		animationData.currentFrame = 0;
-		graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
-	}
+	isPlaying = true;
+	currentFrameTimer = 0;
+	animationData.currentFrame = 0;
+	graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
 	return this;
 }
