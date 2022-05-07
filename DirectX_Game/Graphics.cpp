@@ -38,9 +38,6 @@ Graphics::Graphics(HWND handle)
 {
 	this->handle = handle;
 	Init();
-	camera = Camera(deviceContext);
-	CreateConstantBuffer(&camera.viewProjBuffer, sizeof(Matrix));
-	CreateConstantBuffer(&camera.worldBuffer, sizeof(Matrix));
 }
 
 Graphics::Graphics()
@@ -48,10 +45,6 @@ Graphics::Graphics()
 }
 Graphics::~Graphics()
 {
-}
-void Graphics::MoveCamera(float x, float y)
-{
-	camera.Move(x, y);
 }
 HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 {
@@ -86,7 +79,7 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-int Graphics::CreateDrawable(std::vector<LevelBlockVertex> vertices, ShaderClass* shaders
+int Graphics::CreateDrawable(std::vector<Vertex> vertices, ShaderClass* shaders
 	, UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
 	, vector<ID3D11ShaderResourceView*> psResourceViews, vector<ID3D11Buffer*> psConstantBuffers)
 {

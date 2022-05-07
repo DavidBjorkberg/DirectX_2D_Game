@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include "AnimationController.h"
 void Player::Update(float deltaTime)
 {
 	hitEnemyIndices.clear();
@@ -11,7 +11,7 @@ void Player::Update(float deltaTime)
 	UpdateAnimation();
 	if (IsAlive())
 	{
-		playerMovement->Update(deltaTime, &currentAnimation, currentAnimationBuffer);
+		//playerMovement->Update(deltaTime, &currentAnimation, currentAnimationBuffer);
 	}
 }
 
@@ -25,7 +25,7 @@ std::vector<int> Player::GetEnemyHitIndices()
 	return hitEnemyIndices;
 }
 
-Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
+Player::Player(Vector3 pos, Graphics* graphics)
 {
 	keyboard = std::make_unique<DirectX::Keyboard>();
 	currentHealth = maxHealth;
@@ -37,15 +37,16 @@ Player::Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandl
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
 	graphics->MapToBuffer(healthBuffer, &healthPercent, sizeof(float));
 
+
 	InitializeShaders();
-	playerMovement = new PlayerMovement(pos, width, height, collisionHandler, &currentAnimation, &currentAnimationBuffer, graphics, keyboard.get());
+	//playerMovement = new PlayerMovement(pos, width, height, collisionHandler, &currentAnimation, &currentAnimationBuffer, graphics, keyboard.get());
 	jumpAnimation = new Animation(graphics, Animation::AnimationType::Jump, false);
 	idleAnimation = new Animation(graphics, Animation::AnimationType::Idle);
 	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
 	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack, false, 10);
 	hitAnimation = new Animation(graphics, Animation::AnimationType::Hit, false, 20);
 	deathAnimation = new Animation(graphics, Animation::AnimationType::Death, false);
-	currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
+	currentAnimation = idleAnimation->Play(currentAnimationBuffer);
 	CreateDrawable(pos);
 
 }
@@ -55,15 +56,6 @@ Player::Player()
 }
 void Player::Attack()
 {
-	std::vector<BoxCollider*> hits = playerMovement->collisionHandler->GetCollisions(playerMovement->attackCollider);
-
-	for (int i = 0; i < hits.size(); i++)
-	{
-		if (hits[i]->unitIndex > 0)
-		{
-			hitEnemyIndices.push_back(hits[i]->unitIndex);
-		}
-	}
 }
 
 void Player::TakeDamage()
@@ -74,11 +66,11 @@ void Player::TakeDamage()
 	graphics->MapToBuffer(healthBuffer, &healthPercent, sizeof(float));
 	if (currentHealth > 0)
 	{
-		currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
+		//currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
 	}
 	else
 	{
-		currentAnimation = deathAnimation->Play(currentAnimationBuffer, currentAnimation);
+		//currentAnimation = deathAnimation->Play(currentAnimationBuffer, currentAnimation);
 	}
 }
 
@@ -97,21 +89,21 @@ void Player::InitializeShaders()
 
 void Player::CreateDrawable(Vector3 position)
 {
-	vector<ID3D11Buffer*> vsConstantBuffers;
-	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
-	vsConstantBuffers.push_back(playerMovement->moveBuffer);
-	vsConstantBuffers.push_back(currentAnimationBuffer);
-	vsConstantBuffers.push_back(playerMovement->facingDirBuffer);
-	vector<ID3D11ShaderResourceView*> psResourceViews;
-	psResourceViews.push_back(texture.GetResourceView());
+	//vector<ID3D11Buffer*> vsConstantBuffers;
+	//vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
+	//vsConstantBuffers.push_back(playerMovement->moveBuffer);
+	//vsConstantBuffers.push_back(currentAnimationBuffer);
+	//vsConstantBuffers.push_back(playerMovement->facingDirBuffer);
+	//vector<ID3D11ShaderResourceView*> psResourceViews;
+	//psResourceViews.push_back(texture.GetResourceView());
 
-	std::vector<Graphics::LevelBlockVertex> vertices;
-	vertices.push_back({ position + Vector3(0,height,0)		,Vector2(0,0) });
-	vertices.push_back({ position + Vector3(width,0,0)		,Vector2(1,1) });
-	vertices.push_back({ position							,Vector2(0,1) });
-	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
+	//std::vector<Graphics::Vertex> vertices;
+	//vertices.push_back({ position + Vector3(0,height,0)		,Vector2(0,0) });
+	//vertices.push_back({ position + Vector3(width,0,0)		,Vector2(1,1) });
+	//vertices.push_back({ position							,Vector2(0,1) });
+	//vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
 
-	graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
+	//graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::Vertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 
 
@@ -123,13 +115,13 @@ void Player::UpdateAnimation()
 	case Animation::AnimationType::Attack:
 		if (!currentAnimation->isPlaying)
 		{
-			currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
+			//currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
 		}
 		break;
 	case Animation::AnimationType::Hit:
 		if (!currentAnimation->isPlaying)
 		{
-			currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
+			//currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
 			playerMovement->canMove = true;
 		}
 		break;
@@ -138,21 +130,21 @@ void Player::UpdateAnimation()
 	default:
 		if (kb.X)
 		{
-			currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
+			//currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
 		}
 		else if (playerMovement->IsGrounded())
 		{
 			if (kb.Space)
 			{
-				currentAnimation = jumpAnimation->Play(currentAnimationBuffer, currentAnimation);
+				//currentAnimation = jumpAnimation->Play(currentAnimationBuffer, currentAnimation);
 			}
 			else if (kb.A || kb.D)
 			{
-				currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
+				//currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
 			}
 			else
 			{
-				currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
+				//currentAnimation = idleAnimation->Play(currentAnimationBuffer, currentAnimation);
 			}
 		}
 		break;

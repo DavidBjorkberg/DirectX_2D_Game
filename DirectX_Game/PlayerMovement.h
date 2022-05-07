@@ -3,22 +3,20 @@
 #include"Animation.h"
 #include"CollisionHandler.h"
 #include"Keyboard.h"
-
+#include "Component.h"
 using namespace DirectX::SimpleMath;
-class PlayerMovement
+class PlayerMovement : public Component
 {
 public:
-	Vector3 position;
+	Vector2 position;
 	ID3D11Buffer* moveBuffer;
 	ID3D11Buffer* facingDirBuffer;
 	CollisionHandler* collisionHandler;
-	BoxCollider* collider;
-	BoxCollider* attackCollider;
 	bool canMove = true;
 
-	void Update(float deltaTime, Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer);
+	void Update(float deltaTime) override;
 	bool IsGrounded();
-	PlayerMovement(Vector3 position, float width, float height,CollisionHandler* collisionHandler, Animation** currentAnimation,ID3D11Buffer** currentAnimationBuffer,Graphics* graphics, DirectX::Keyboard* keyboard);
+	PlayerMovement(Vector2 position, float width, float height,CollisionHandler* collisionHandler,Graphics* graphics, DirectX::Keyboard* keyboard);
 private:
 	enum class VelocityMode
 	{
@@ -28,8 +26,8 @@ private:
 	DirectX::Keyboard* keyboard;
 	Graphics* graphics;
 
-	Vector3 curVelocity;
-	Vector3 previousTranslation;
+	Vector2 curVelocity;
+	Vector2 previousTranslation;
 	Matrix moveMatrix = Matrix::Identity;
 	float attackRange = 1;
 	float attackHeight = 1;
@@ -44,10 +42,10 @@ private:
 	void Move(); 
 	void Jump(); 
 	void CheckNextFrameCollision(); 
-	void AddVelocity(Vector3 newVelocity, VelocityMode velocityMode); 
+	void AddVelocity(Vector2 newVelocity, VelocityMode velocityMode); 
 	void ApplyGravity(); 
 	void ClampVelocity(); 
 	void SwitchFacingDir(); 
-	void GetInput(Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer);
+	void GetInput();
 
 };

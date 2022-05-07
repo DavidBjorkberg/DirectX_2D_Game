@@ -1,8 +1,5 @@
 #pragma once
 #include"SimpleMath.h"
-#include<d3d11.h>
-#include "Graphics.h"
-#include"CollisionHandler.h"
 #include"Keyboard.h"
 #include "Texture.h"
 #include"Animation.h"
@@ -21,7 +18,7 @@ public:
 	void UpdateAnimation();
 	void Update(float deltaTime);
 	bool IsAlive();
-	Player(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler);
+	Player(Vector3 pos, Graphics* graphics);
 	Player();
 
 private:

@@ -1,17 +1,16 @@
 #pragma once
 #include<d3d11.h>
-#include "Camera.h"
 #include <vector>
 #include"Shaders.h"
+#include "SimpleMath.h"
 using namespace std;
 class Graphics
 {
 public:
-	struct LevelBlockVertex
+	struct Vertex
 	{
-		Vector3 pos;
-		Vector2 UV;
-
+		DirectX::SimpleMath::Vector2 pos;
+		DirectX::SimpleMath::Vector2 UV;
 	};
 	struct DrawableStruct
 	{
@@ -29,16 +28,14 @@ public:
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	IDXGISwapChain* swapChain;
-	Camera camera;
 	ID3D11Buffer* squareIndexBuffer;
 
 	bool Init();
-	int CreateDrawable(std::vector<LevelBlockVertex> vertices,ShaderClass* shaders,UINT vertexSize
+	int CreateDrawable(std::vector<Vertex> vertices,ShaderClass* shaders,UINT vertexSize
 		,ID3D11Buffer* indexBuffer,vector<ID3D11Buffer*> vsConstantBuffers = vector<ID3D11Buffer*>()
 		, vector<ID3D11ShaderResourceView*> psResourceViews = vector<ID3D11ShaderResourceView*>(), vector<ID3D11Buffer*> psConstantBuffers = vector<ID3D11Buffer*>());
 	void RemoveDrawable(int index);
 	void Draw();
-	void MoveCamera(float x, float y);
 	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size); 
 	void Update();
 	void MapToBuffer(ID3D11Buffer* buffer, const void* data, size_t size);

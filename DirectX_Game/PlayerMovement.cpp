@@ -1,26 +1,23 @@
 #include "PlayerMovement.h"
-
-PlayerMovement::PlayerMovement(Vector3 position, float width, float height, CollisionHandler* collisionHandler
-	, Animation** currentAnimation, ID3D11Buffer** currentAnimationBuffer, Graphics* graphics, DirectX::Keyboard* keyboard)
+#include "Transform.h"
+#include "Entity.h"
+PlayerMovement::PlayerMovement(Vector2 position, float width, float height, CollisionHandler* collisionHandler
+	, Graphics* graphics, DirectX::Keyboard* keyboard)
 {
 	this->position = position;
 	this->collisionHandler = collisionHandler;
 	this->graphics = graphics;
-	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
-	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
-	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 	this->keyboard = keyboard;
-	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f, 0);
-	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, attackHeight / 2, 0), attackRange, attackHeight, -1);
+	//collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f, 0);
+	//attackCollider = new BoxCollider(position + Vector2(0.4f, 0.1f) + Vector2(attackRange / 2, attackHeight / 2), attackRange, attackHeight, -1);
 
-	collisionHandler->AddCollider(collider);
 }
-void PlayerMovement::Update(float deltaTime, Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer)
+void PlayerMovement::Update(float deltaTime)
 {
 	this->deltaTime = deltaTime;
 	ApplyGravity();
 
-	GetInput(currentAnimation, currentAnimationBuffer);
+	GetInput();
 	ClampVelocity();
 
 	CheckNextFrameCollision();
@@ -29,47 +26,23 @@ void PlayerMovement::Update(float deltaTime, Animation** currentAnimation, ID3D1
 }
 void PlayerMovement::Move()
 {
-	Vector3 finalVelocity = (curVelocity)*deltaTime;
+	Vector2 finalVelocity = (curVelocity)*deltaTime;
 	if (!canMove)
 	{
 		finalVelocity.x = 0;
 	}
-	if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
-	{
-		previousTranslation += finalVelocity;
-		moveMatrix = Matrix::CreateTranslation(previousTranslation);
-		graphics->MoveCamera(finalVelocity.x, finalVelocity.y);
-		position += finalVelocity;
-		collider->Move(finalVelocity);
-		attackCollider->Move(finalVelocity);
-		graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
-	}
+	//static_cast<GameObject*>(owner)->GetComponent<Transform>()->TryMove(finalVelocity, false);
 }
 void PlayerMovement::Jump()
 {
-	AddVelocity(Vector3(curVelocity.x, jumpForce, 0), VelocityMode::Set);
+	AddVelocity(Vector2(curVelocity.x, jumpForce), VelocityMode::Set);
 }
 void PlayerMovement::CheckNextFrameCollision()
 {
-	BoxCollider* collidedWith = collisionHandler->isCollidingAfterMove(collider, curVelocity * deltaTime);
-	if (collidedWith != nullptr)
-	{
-		if (!collider->IsCollidingAfterMove(collidedWith, Vector3(curVelocity.x, 0, 0) * deltaTime))
-		{
-			curVelocity.y = 0;
-		}
-		else if (!collider->IsCollidingAfterMove(collidedWith, Vector3(0, curVelocity.y, 0) * deltaTime))
-		{
-			curVelocity.x = 0;
-		}
-		else
-		{
-			curVelocity = Vector3::Zero;
-		}
-	}
+	
 }
 
-void PlayerMovement::AddVelocity(Vector3 addVelocity, VelocityMode velocityMode)
+void PlayerMovement::AddVelocity(Vector2 addVelocity, VelocityMode velocityMode)
 {
 	if (velocityMode == VelocityMode::Add)
 	{
@@ -85,17 +58,17 @@ void PlayerMovement::ApplyGravity()
 	//For high jump
 	if (curVelocity.y < 0)
 	{
-		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Add);
+		AddVelocity(Vector2(0, -1) * gravity * 2 * deltaTime, VelocityMode::Add);
 	}
 	else if (curVelocity.y > 0 && !keyboard->GetState().Space)
 	{
-		AddVelocity(Vector3::Down * gravity * 2 * deltaTime, VelocityMode::Add);
+		AddVelocity(Vector2(0, -1) * gravity * 2 * deltaTime, VelocityMode::Add);
 	}
 	//Regular gravity 
-	AddVelocity(Vector3::Down * gravity * deltaTime, VelocityMode::Add);
+	AddVelocity(Vector2(0, -1) * gravity * deltaTime, VelocityMode::Add);
 }
 
-void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* currentAnimationBuffer)
+void PlayerMovement::GetInput()
 {
 	DirectX::Keyboard::State kb = keyboard->GetState();
 
@@ -105,7 +78,7 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 		{
 			SwitchFacingDir();
 		}
-		AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Add);
+		AddVelocity(Vector2(-1, 0) * acceleration * deltaTime, VelocityMode::Add);
 	}
 	else if (kb.D)
 	{
@@ -114,7 +87,7 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 			SwitchFacingDir();
 		}
 
-		AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Add);
+		AddVelocity(Vector2(1, 0) * acceleration * deltaTime, VelocityMode::Add);
 	}
 	if (IsGrounded())
 	{
@@ -122,7 +95,7 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 		{
 			if (curVelocity.x > 0)
 			{
-				AddVelocity(Vector3::Left * acceleration * deltaTime, VelocityMode::Add);
+				AddVelocity(Vector2(-1, 0) * acceleration * deltaTime, VelocityMode::Add);
 				if (curVelocity.x < 0)
 				{
 					curVelocity.x = 0;
@@ -130,7 +103,7 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 			}
 			else
 			{
-				AddVelocity(Vector3::Right * acceleration * deltaTime, VelocityMode::Add);
+				AddVelocity(Vector2(1, 0) * acceleration * deltaTime, VelocityMode::Add);
 				if (curVelocity.x > 0)
 				{
 					curVelocity.x = 0;
@@ -151,7 +124,7 @@ void PlayerMovement::GetInput(Animation** currentAnimation, ID3D11Buffer* curren
 
 bool PlayerMovement::IsGrounded()
 {
-	return collisionHandler->isCollidingAfterMove(collider, Vector3::Down * 0.1f) && curVelocity.y <= 0;
+	return false;
 }
 
 void PlayerMovement::ClampVelocity()
@@ -170,22 +143,23 @@ void PlayerMovement::ClampVelocity()
 }
 void PlayerMovement::SwitchFacingDir()
 {
-	if (facingRight)
-	{
-		previousTranslation += Vector3(-1, 0, 0);
-		moveMatrix = Matrix::CreateTranslation(previousTranslation);
-		collider->Move(Vector3(-0.4f, 0, 0));
-		attackCollider->Move(Vector3(-(1 + (attackRange / 2)), 0, 0));
-	}
-	else
-	{
-		previousTranslation += Vector3(1, 0, 0);
-		moveMatrix = Matrix::CreateTranslation(previousTranslation);
-		collider->Move(Vector3(0.4f, 0, 0));
-		attackCollider->Move(Vector3(1 + (attackRange / 2), 0, 0));
-	}
-	graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
-	facingRight = !facingRight;
-	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
+	//TODO:
+	//if (facingRight)
+	//{
+	//	previousTranslation += Vector3(-1, 0, 0);
+	//	moveMatrix = Matrix::CreateTranslation(previousTranslation);
+	//	collider->Move(Vector3(-0.4f, 0, 0));
+	//	attackCollider->Move(Vector3(-(1 + (attackRange / 2)), 0, 0));
+	//}
+	//else
+	//{
+	//	previousTranslation += Vector3(1, 0, 0);
+	//	moveMatrix = Matrix::CreateTranslation(previousTranslation);
+	//	collider->Move(Vector3(0.4f, 0, 0));
+	//	attackCollider->Move(Vector3(1 + (attackRange / 2), 0, 0));
+	//}
+	//graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
+	//facingRight = !facingRight;
+	//graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
 }
 
