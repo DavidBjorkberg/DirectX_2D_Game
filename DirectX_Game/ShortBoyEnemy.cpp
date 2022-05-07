@@ -1,7 +1,7 @@
 #include "ShortBoyEnemy.h"
 
-ShortBoyEnemy::ShortBoyEnemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler, int enemyIndex)
-	:Enemy(pos,graphics,collisionHandler)
+ShortBoyEnemy::ShortBoyEnemy(Vector3 pos, Graphics* graphics, int enemyIndex)
+	:Enemy(pos,graphics)
 {
 	this->height = 2;
 	this->width = 2;
