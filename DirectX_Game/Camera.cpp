@@ -1,24 +1,28 @@
 #include "Camera.h"
-
+#include "Transform.h"
 void Camera::UpdateViewMatrix()
 {
 	lookTarget = Vector3(position.x, position.y, 1);
 	viewMatrix = XMMatrixLookAtLH(this->position, lookTarget, Vector3::Up);
 	viewProj = viewMatrix * projMatrix;
-	
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = deviceContext->Map(viewProjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &viewProj, sizeof(Matrix));
-	deviceContext->Unmap(viewProjBuffer, 0);
+	graphics->MapToBuffer(viewProjBuffer, &viewProj, sizeof(Matrix));
 }
-Camera::Camera(ID3D11DeviceContext* deviceContext)
+Camera::Camera(Graphics* graphics)
 {
-	this->deviceContext = deviceContext;
+	this->graphics = graphics;
+	graphics->CreateConstantBuffer(&viewProjBuffer, sizeof(Matrix));
+	projMatrix = DirectX::XMMatrixOrthographicLH(20, 20, 0.1f, 1);
+	position.z = -1;
 }
 
-Matrix Camera::GetViewMatrix()
+void Camera::Update()
 {
-	return viewMatrix;
+	Vector2 targetPos = gameObjectToFollow->GetComponent<Transform>()->GetPosition();
+	//test += 0.00015f;
+	this->position = Vector3(0, -10, 0);
+	//this->position = Vector3(targetPos.x, targetPos.y + 6, position.z);
+
+	UpdateViewMatrix();
 }
 
 ID3D11Buffer* Camera::GetViewProjBuffer()
@@ -26,29 +30,7 @@ ID3D11Buffer* Camera::GetViewProjBuffer()
 	return viewProjBuffer;
 }
 
-void Camera::Move(float x, float y)
+void Camera::SetFollowTarget(Entity* gameObjectToFollow)
 {
-	this->position += Vector3(x, y, 0);
-	worldMatrix = Matrix::CreateTranslation(position);
-
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = deviceContext->Map(worldBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &worldMatrix, sizeof(Matrix));
-	deviceContext->Unmap(worldBuffer, 0);
-	UpdateViewMatrix();
-}
-
-void Camera::Init(Vector3 playerPos)
-{
-	this->position = Vector3(playerPos.x, playerPos.y + 6, -1);
-	projMatrix = DirectX::XMMatrixOrthographicLH(20,20, 0.1f, 20.0f);
-	D3D11_MAPPED_SUBRESOURCE mappedMemory;
-	HRESULT hr = deviceContext->Map(worldBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedMemory);
-	memcpy(mappedMemory.pData, &worldMatrix, sizeof(Matrix));
-	deviceContext->Unmap(worldBuffer, 0);
-	UpdateViewMatrix();
-}
-
-Camera::Camera()
-{
+	this->gameObjectToFollow = gameObjectToFollow;
 }
