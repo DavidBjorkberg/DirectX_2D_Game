@@ -16,6 +16,7 @@ void Game::Initialize(HWND handle)
 
 void Game::Update()
 {
+	Input::Update();
 	levelManager.UpdateComponents(*deltaTime);
 	mainCamera->Update();
 	graphics.Update();

@@ -35,8 +35,11 @@ void PlayerMovement2::HandleInput(float deltaTime)
 	{
 		this->transform->TryMove(moveDirection * movementSpeed * deltaTime, false);
 	}
-	if (Input::KeyPressed(DirectX::Keyboard::Space))
+	//if (Input::keyboard->GetState().IsKeyDown(DirectX::Keyboard::Space))
 	{
-		rigidbody->AddVelocity(Vector2(0, 0.005f), Rigidbody::VelocityMode::Set);
+		if (Input::KeyPressed(DirectX::Keyboard::Space))
+		{
+			rigidbody->AddVelocity(Vector2(0, 0.005f), Rigidbody::VelocityMode::Set);
+		}
 	}
 }
