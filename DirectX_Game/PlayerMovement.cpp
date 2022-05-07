@@ -8,7 +8,6 @@ PlayerMovement::PlayerMovement(Vector2 position, float width, float height, Coll
 	this->collisionHandler = collisionHandler;
 	this->graphics = graphics;
 	this->keyboard = keyboard;
-	//collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), width - 1.4f, height - 0.8f, 0);
 	//attackCollider = new BoxCollider(position + Vector2(0.4f, 0.1f) + Vector2(attackRange / 2, attackHeight / 2), attackRange, attackHeight, -1);
 
 }
