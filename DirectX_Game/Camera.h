@@ -2,7 +2,7 @@
 #include<d3d11.h>
 #include <SimpleMath.h>
 #include "Graphics.h"
-#include "GameObject.h"
+#include "Entity.h"
 
 using namespace DirectX::SimpleMath;
 class Camera
@@ -22,5 +22,5 @@ private:
 	Matrix viewProj;
 	ID3D11Buffer* viewProjBuffer;
 	Graphics* graphics;
-	Entity* gameObjectToFollow;
+	Entity* entityToFollow;
 };

@@ -17,7 +17,7 @@ Camera::Camera(Graphics* graphics)
 
 void Camera::Update()
 {
-	Vector2 targetPos = gameObjectToFollow->GetComponent<Transform>()->GetPosition();
+	Vector2 targetPos = entityToFollow->GetComponent<Transform>()->GetPosition();
 	//test += 0.00015f;
 	this->position = Vector3(0, -10, 0);
 	//this->position = Vector3(targetPos.x, targetPos.y + 6, position.z);
@@ -32,5 +32,5 @@ ID3D11Buffer* Camera::GetViewProjBuffer()
 
 void Camera::SetFollowTarget(Entity* gameObjectToFollow)
 {
-	this->gameObjectToFollow = gameObjectToFollow;
+	this->entityToFollow = gameObjectToFollow;
 }
