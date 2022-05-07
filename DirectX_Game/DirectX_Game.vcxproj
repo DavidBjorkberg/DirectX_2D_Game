@@ -142,25 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CollisionHandler.cpp" />
-    <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="LevelBlock.cpp" />
-    <ClCompile Include="LevelManager.cpp" />
-    <ClCompile Include="LevelReader.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerMovement.cpp" />
-    <ClCompile Include="Shaders.cpp" />
-    <ClCompile Include="ShortBoyEnemy.cpp" />
-    <ClCompile Include="TallBoyEnemy.cpp" />
-    <ClCompile Include="Texture.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="BGPixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -244,22 +225,61 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationController.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionHandler.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="LevelBlock.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="LevelReader.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerGameObject.h" />
     <ClInclude Include="PlayerMovement.h" />
+    <ClInclude Include="PlayerMovement2.h" />
+    <ClInclude Include="Raycast.h" />
+    <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="ShortBoyEnemy.h" />
-    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="TallBoyEnemy.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Transform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationController.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="CollisionHandler.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LevelBlock.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
+    <ClCompile Include="LevelReader.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerMovement.cpp" />
+    <ClCompile Include="PlayerMovement2.cpp" />
+    <ClCompile Include="Raycast.cpp" />
+    <ClCompile Include="Rigidbody.cpp" />
+    <ClCompile Include="Shaders.cpp" />
+    <ClCompile Include="ShortBoyEnemy.cpp" />
+    <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="TallBoyEnemy.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
