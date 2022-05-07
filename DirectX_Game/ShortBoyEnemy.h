@@ -3,6 +3,6 @@
 class ShortBoyEnemy : public Enemy
 {
 public:
-	ShortBoyEnemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler, int enemyIndex);
+	ShortBoyEnemy(Vector3 pos, Graphics* graphics, int enemyIndex);
 
 };

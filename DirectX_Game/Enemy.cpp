@@ -17,7 +17,7 @@ void Enemy::Update(Vector3 playerPos, float deltaTime, bool isPlayerAlive)
 
 void Enemy::TakeDamage()
 {
-	currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
+	//currentAnimation = hitAnimation->Play(currentAnimationBuffer, currentAnimation);
 	isWalking = false;
 	health--;
 }
@@ -26,11 +26,10 @@ Enemy::Enemy()
 {
 }
 
-Enemy::Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler)
+Enemy::Enemy(Vector3 pos, Graphics* graphics)
 {
 	this->position = pos;
 	this->graphics = graphics;
-	this->collisionHandler = collisionHandler;
 	graphics->CreateConstantBuffer(&currentAnimationBuffer, 16);
 	graphics->CreateConstantBuffer(&moveBuffer, sizeof(Matrix));
 	graphics->CreateConstantBuffer(&facingDirBuffer, 16);
@@ -40,14 +39,13 @@ Enemy::Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler
 void Enemy::Init(int enemyIndex, std::string filepath)
 {
 	texture.Initialize(graphics->device, graphics->deviceContext, filepath);
-	attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, attackHeight / 2, 0), attackRange, attackHeight, -1);
-	collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), modelWidth, modelHeight, enemyIndex);
-	collisionHandler->AddCollider(collider);
+	//attackCollider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0) + Vector3(attackRange / 2, attackHeight / 2, 0), attackRange, attackHeight, -1);
+	//collider = new BoxCollider(position + Vector3(0.4f, 0.1f, 0), modelWidth, modelHeight, enemyIndex);
 	runAnimation = new Animation(graphics, Animation::AnimationType::Run);
 	attackAnimation = new Animation(graphics, Animation::AnimationType::Attack, false);
 	hitAnimation = new Animation(graphics, Animation::AnimationType::Hit, false, 20);
 
-	currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
+	//currentAnimation = runAnimation->Play(currentAnimationBuffer, currentAnimation);
 	curVelocity.x = 1;
 
 	InitializeShaders();
@@ -55,7 +53,7 @@ void Enemy::Init(int enemyIndex, std::string filepath)
 }
 void Enemy::UpdateAnimation()
 {
-	switch (currentAnimation->animationType)
+	/*switch (currentAnimation->animationType)
 	{
 	case Animation::AnimationType::Hit:
 		if (!currentAnimation->isPlaying)
@@ -81,11 +79,11 @@ void Enemy::UpdateAnimation()
 	default:
 		break;
 	}
-	currentAnimation->Update(deltaTime, currentAnimationBuffer);
+	currentAnimation->Update(deltaTime, currentAnimationBuffer);*/
 }
 void Enemy::SwitchWalkingDir()
 {
-	if (facingRight)
+	/*if (facingRight)
 	{
 		previousTranslation += Vector3(-1, 0, 0);
 		moveMatrix = Matrix::CreateTranslation(previousTranslation);
@@ -102,7 +100,7 @@ void Enemy::SwitchWalkingDir()
 	}
 	facingRight = !facingRight;
 	graphics->MapToBuffer(facingDirBuffer, &facingRight, sizeof(bool));
-	curVelocity.x *= -1;
+	curVelocity.x *= -1;*/
 }
 void Enemy::ApplyGravity()
 {
@@ -123,7 +121,7 @@ void Enemy::InitializeShaders()
 
 void Enemy::CheckNextFrameCollision()
 {
-	BoxCollider* collidedWith = collisionHandler->isCollidingAfterMove(collider, curVelocity * deltaTime);
+	/*BoxCollider* collidedWith = collisionHandler->isCollidingAfterMove(collider, curVelocity * deltaTime);
 	if (collidedWith != nullptr)
 	{
 		if (!collider->IsCollidingAfterMove(collidedWith, Vector3(curVelocity.x, 0, 0) * deltaTime))
@@ -148,48 +146,48 @@ void Enemy::CheckNextFrameCollision()
 		{
 			SwitchWalkingDir();
 		}
-	}
+	}*/
 }
 
 void Enemy::CreateDrawable()
 {
-	vector<ID3D11Buffer*> vsConstantBuffers;
-	vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
-	vsConstantBuffers.push_back(moveBuffer);
-	vsConstantBuffers.push_back(currentAnimationBuffer);
-	vsConstantBuffers.push_back(facingDirBuffer);
-	vector<ID3D11ShaderResourceView*> psResourceViews;
-	psResourceViews.push_back(texture.GetResourceView());
+	//vector<ID3D11Buffer*> vsConstantBuffers;
+	//vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
+	//vsConstantBuffers.push_back(moveBuffer);
+	//vsConstantBuffers.push_back(currentAnimationBuffer);
+	//vsConstantBuffers.push_back(facingDirBuffer);
+	//vector<ID3D11ShaderResourceView*> psResourceViews;
+	//psResourceViews.push_back(texture.GetResourceView());
 
-	std::vector<Graphics::LevelBlockVertex> vertices;
-	vertices.push_back({ position + Vector3(0,height,0)		,Vector2(0,0) });
-	vertices.push_back({ position + Vector3(width,0,0)		,Vector2(1,1) });
-	vertices.push_back({ position							,Vector2(0,1) });
-	vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
+	//std::vector<Graphics::Vertex> vertices;
+	//vertices.push_back({ position + Vector3(0,height,0)		,Vector2(0,0) });
+	//vertices.push_back({ position + Vector3(width,0,0)		,Vector2(1,1) });
+	//vertices.push_back({ position							,Vector2(0,1) });
+	//vertices.push_back({ position + Vector3(width,height,0)	,Vector2(1,0) });
 
-	drawableIndex = graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::LevelBlockVertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
+	//drawableIndex = graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::Vertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 
 void Enemy::Move()
 {
-	if (isWalking)
-	{
-		Vector3 finalVelocity = (curVelocity)*deltaTime;
-		if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
-		{
-			previousTranslation += finalVelocity;
-			moveMatrix = Matrix::CreateTranslation(previousTranslation);
-			position += finalVelocity;
-			collider->Move(finalVelocity);
-			attackCollider->Move(finalVelocity);
-			graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
-		}
-	}
+	//if (isWalking)
+	//{
+	//	Vector3 finalVelocity = (curVelocity)*deltaTime;
+	//	if (collisionHandler->isCollidingAfterMove(collider, finalVelocity) == nullptr)
+	//	{
+	//		previousTranslation += finalVelocity;
+	//		moveMatrix = Matrix::CreateTranslation(previousTranslation);
+	//		position += finalVelocity;
+	//		collider->Move(finalVelocity);
+	//		attackCollider->Move(finalVelocity);
+	//		graphics->MapToBuffer(moveBuffer, &moveMatrix, sizeof(Matrix));
+	//	}
+	//}
 }
 
 bool Enemy::IsGrounded()
 {
-	return collisionHandler->isCollidingAfterMove(collider, Vector3::Down * 0.1f) && curVelocity.y <= 0;
+	return false;//return collisionHandler->isCollidingAfterMove(collider, Vector3::Down * 0.1f) && curVelocity.y <= 0;
 }
 
 void Enemy::ObservePlayer(Vector3 playerPos)
@@ -225,11 +223,7 @@ void Enemy::Attack()
 		&& currentAnimation->animationType != Animation::AnimationType::Hit)
 	{
 		isWalking = false;
-		currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
-		std::vector<BoxCollider*> hits = collisionHandler->GetCollisions(attackCollider);
-		for (int i = 0; i < hits.size() && !damagedPlayer; i++)
-		{
-			damagedPlayer = hits[i]->unitIndex == 0;
-		}
+		//currentAnimation = attackAnimation->Play(currentAnimationBuffer, currentAnimation);
+
 	}
 }

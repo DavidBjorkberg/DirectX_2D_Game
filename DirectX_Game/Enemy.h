@@ -1,21 +1,19 @@
 #pragma once
-#include"BoxCollider.h"
 #include<d3d11.h>
 #include"Texture.h"
 #include"Graphics.h"
-#include"CollisionHandler.h"
 #include"Animation.h"
+using namespace DirectX::SimpleMath;
 class Enemy
 {
 public:
-	BoxCollider* collider;
 	bool isToBeRemoved;
 	bool damagedPlayer;
 	void Update(Vector3 playerPos, float deltaTime, bool isPlayerAlive);
 	void TakeDamage();
 	int drawableIndex;
 	Enemy();
-	Enemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler);
+	Enemy(Vector3 pos, Graphics* graphics);
 protected:
 	void Init(int enemyIndex, std::string filepath);
 	float width = 2;
@@ -27,12 +25,10 @@ protected:
 private:
 	Texture texture;
 	ShaderClass* shaders;
-	CollisionHandler* collisionHandler;
 	Animation* runAnimation;
 	Animation* attackAnimation;
 	Animation* hitAnimation;
 	Animation* currentAnimation;
-	BoxCollider* attackCollider;
 	Vector3 previousTranslation;
 	Vector3 position;
 	Vector3 curVelocity;

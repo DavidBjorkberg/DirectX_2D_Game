@@ -1,7 +1,7 @@
 #include "TallBoyEnemy.h"
 
-TallBoyEnemy::TallBoyEnemy(Vector3 pos, Graphics* graphics, CollisionHandler* collisionHandler, int enemyIndex) 
-	: Enemy(pos,graphics,collisionHandler)
+TallBoyEnemy::TallBoyEnemy(Vector3 pos, Graphics* graphics, int enemyIndex) 
+	: Enemy(pos,graphics)
 {
 	this->height = 2;
 	this->width = 2;
