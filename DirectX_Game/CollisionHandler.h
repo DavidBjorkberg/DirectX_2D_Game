@@ -1,16 +1,16 @@
 #pragma once
-#include"BoxCollider.h"
+#include"Collider.h"
 #include<vector>
-class CollisionHandler
+static class CollisionHandler
 {
 public:
-	void AddCollider(BoxCollider* collider);
-	void RemoveCollider(BoxCollider* collider);
-	bool isColliding(BoxCollider* collider);
-	std::vector<BoxCollider*> GetCollisions(BoxCollider* collider);
-	BoxCollider* isCollidingAfterMove(BoxCollider* collider, Vector3 moveVec);
-	bool IsPointCollidingWithLevel(Vector3 point);
+	static void AddCollider(Collider* collider);
+	static void RemoveCollider(Collider* collider);
+	static std::vector<Collider*> GetCollisions(Collider* collider);
+	static Collider* isCollidingAfterMove(Collider* collider, Vector2 moveVec);
+	static bool IsPointCollidingWithLevel(Vector3 point);
+	static std::vector<Collider*> GetAllCollidersInLevel();
 	CollisionHandler();
 private:
-	std::vector<BoxCollider*> colliders;
+	static std::vector<Collider*> colliders;
 };

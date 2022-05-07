@@ -1,19 +1,11 @@
 #pragma once
-#include <SimpleMath.h>
-using namespace DirectX::SimpleMath;
-class BoxCollider
+#include "Collider.h"
+class BoxCollider : public Collider
 {
 public:
-	Vector3 bottomLeftPos;
-	float width;
-	float height;
-	int unitIndex; // -1 = non-unit, 0 = player 1+ = enemy index
-
-	bool IsColliding(BoxCollider* other);
-	bool IsCollidingAfterMove(BoxCollider* other,Vector3 moveVec);
-	void Move(Vector3 moveVec);
+	bool IsColliding(Collider* other)override;
+	bool IsCollidingAfterMove(Collider* other, Vector2 moveVec)override;
+	void Move(Vector2 moveVec)override;
 	BoxCollider();
-	BoxCollider(Vector3 pos, float width, float height,int unitIndex);
-private:
-
+	BoxCollider(Vector2 pos, float width, float height);
 };
