@@ -2,26 +2,24 @@
 #include<vector>
 #include"LevelBlock.h"
 #include"Graphics.h"
-#include "stb_image.h"
-#include"CollisionHandler.h"
 #include"Player.h"
 #include"LevelReader.h"
-#include"TallBoyEnemy.h"
-#include"ShortBoyEnemy.h"
+#include"Enemy.h"
+#include "Entity.h"
 #define STB_IMAGE_IMPLEMENTATION
 class LevelManager
 {
 public:
 	std::vector<LevelBlock*> level;
 	std::vector<Enemy*> enemies;
-	Player* player;
+	Entity* playerGO;
 	void UpdateComponents(float deltaTime);
+	static void AddGameObject(Entity* gameObject);
 	LevelManager();
-	LevelManager(Graphics* graphics,CollisionHandler* collisionHandler);
+	LevelManager(Graphics* graphics);
 private:
 	Graphics* graphics;
-	CollisionHandler* collisionHandler;
 	LevelReader* levelReader;
-	void InitializeColliders();
+	static std::vector<Entity*> gameObjects;
 	void UpdateEnemies(float deltaTime);
 };

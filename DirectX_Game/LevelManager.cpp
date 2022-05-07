@@ -1,43 +1,53 @@
 #include "LevelManager.h"
-
+#include "Transform.h"
+#include "SpriteRenderer.h"
+#include "Rigidbody.h"
+#include "Component.h"
+#include "PlayerMovement2.h"
+std::vector<Entity*> LevelManager::gameObjects;
 void LevelManager::UpdateComponents(float deltaTime)
 {
-	player->Update(deltaTime);
+	playerGO->UpdateComponents(deltaTime);
 	UpdateEnemies(deltaTime);
+}
+
+void LevelManager::AddGameObject(Entity* gameObject)
+{
+	gameObjects.push_back(gameObject);
 }
 
 LevelManager::LevelManager()
 {
 }
 
-LevelManager::LevelManager(Graphics* graphics, CollisionHandler* collisionHandler)
+LevelManager::LevelManager(Graphics* graphics)
 {
 	this->levelReader = new LevelReader(graphics, &level);
 	this->graphics = graphics;
-	this->collisionHandler = collisionHandler;
-	levelReader->ReadLevel("Textures/Level.png");
-	player = new Player(levelReader->playerSpawnPos, graphics, collisionHandler);
+	levelReader->ReadLevel("Textures/TestLevel.png");
+	std::vector<Component*>* playerComponents = new vector<Component*>();
+	playerComponents->push_back(new Transform(levelReader->playerSpawnPos));
+	playerComponents->push_back(new BoxCollider(levelReader->playerSpawnPos /*+ Vector2(0.4f, 0.1f)*/, 2, 2)); //TODO: Define width & height better than just '2'. Sprite size?
+	playerComponents->push_back(new SpriteRenderer("Textures/Player_SpriteSheet.png", 2, 2, graphics, Vector4::Zero, "PlayerVertex.hlsl", "PlayerPixel.hlsl"));
+	playerComponents->push_back(new Rigidbody());
+	playerComponents->push_back(new PlayerMovement2());
+	playerGO = new Entity(playerComponents);
+	gameObjects.push_back(playerGO);
+	
+	playerGO->GetComponent<Transform>()->SetPosition(levelReader->playerSpawnPos);
 	for (int i = 0; i < levelReader->tallEnemySpawnPos.size(); i++)
 	{
-		enemies.push_back(new TallBoyEnemy(levelReader->tallEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
+		//enemies.push_back(new TallBoyEnemy(levelReader->tallEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
 	}
 	for (int i = 0; i < levelReader->shortEnemySpawnPos.size(); i++)
 	{
-		enemies.push_back(new ShortBoyEnemy(levelReader->shortEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
-	}
-	InitializeColliders();
-}
-void LevelManager::InitializeColliders()
-{
-	for (int i = 0; i < level.size(); i++)
-	{
-		this->collisionHandler->AddCollider(level[i]->collider);
+		//enemies.push_back(new ShortBoyEnemy(levelReader->shortEnemySpawnPos[i], graphics, collisionHandler, enemies.size() + 1));
 	}
 }
 
 void LevelManager::UpdateEnemies(float deltaTime)
 {
-	std::vector<int> hitEnemyIndices = player->GetEnemyHitIndices();
+	/*std::vector<int> hitEnemyIndices = player->GetEnemyHitIndices();
 	for (int i = 0; i < hitEnemyIndices.size(); i++)
 	{
 		for (int j = 0; j < enemies.size(); j++)
@@ -68,7 +78,7 @@ void LevelManager::UpdateEnemies(float deltaTime)
 		{
 			player->TakeDamage();
 		}
-	}
+	}*/
 }
 
 

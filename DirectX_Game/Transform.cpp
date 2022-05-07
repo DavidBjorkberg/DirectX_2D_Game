@@ -1,7 +1,7 @@
 #include "Transform.h"
 #include"BoxCollider.h"
 #include "SpriteRenderer.h"
-#include "GameObject.h"
+#include "Entity.h"
 DirectX::SimpleMath::Vector2 Transform::GetPosition()
 {
 	return this->position;

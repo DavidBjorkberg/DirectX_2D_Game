@@ -16,10 +16,10 @@ public:
 	ID3D11Buffer* dimensionsBuffer;
 	BoxCollider* collider;
 	Texture texture;
-	Vector3 position;
+	Vector2 position;
 	Dimensions dimensions;
 	LevelBlock();
-	LevelBlock(Vector3 pos, float width, float height, Graphics* graphics);
+	LevelBlock(Vector2 pos, float width, float height, Graphics* graphics);
 private:
 
 };

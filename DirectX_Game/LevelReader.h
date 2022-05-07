@@ -9,9 +9,9 @@ using namespace DirectX::SimpleMath;
 class LevelReader
 {
 public:
-	Vector3 playerSpawnPos;
-	std::vector<Vector3> tallEnemySpawnPos;
-	std::vector<Vector3> shortEnemySpawnPos;
+	Vector2 playerSpawnPos;
+	std::vector<Vector2> tallEnemySpawnPos;
+	std::vector<Vector2> shortEnemySpawnPos;
 
 	void AddBlock(int index, int width, int height);
 	void ReadLevel(const char* fileName);
@@ -23,7 +23,7 @@ private:
 		Background, Block, PlayerComponent, TallEnemy, ShortEnemy
 	};
 	std::map<Color, PixelType> colorTranslationPair;
-	Vector3* topLeftOfWindow = new Vector3(-10.2f, 10.2f, 0);
+	Vector2* topLeftOfWindow = new Vector2(-10.2f, 10.2f);
 
 	unsigned char* rgb;
 	int levelSizeX;
@@ -36,8 +36,8 @@ private:
 	int GetObjectHeight(int startIndex, PixelType type);
 	int GetObjectWidth(int startIndex, PixelType type);
 	void AddToRead(std::vector<unsigned int>& readVector, int startIndex, int width, int height);
-	bool HasBlockAbove(Vector3 pos);
-	bool HasBlockBelow(Vector3 pos);
+	bool HasBlockAbove(Vector2 pos);
+	bool HasBlockBelow(Vector2 pos);
 	void CreateLevelDrawables();
 	void CreateUnit(int index, PixelType type);
 	PixelType GetPixelType(int index);

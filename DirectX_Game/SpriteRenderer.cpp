@@ -1,7 +1,7 @@
 #include "SpriteRenderer.h"
 #include "Texture.h"
 #include "Transform.h"
-#include "GameObject.h"
+#include "Entity.h"
 #include "Game.h"
 void SpriteRenderer::UpdatePositionBuffer(const void* data)
 {

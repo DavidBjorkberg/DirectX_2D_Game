@@ -1,15 +1,18 @@
 #include "LevelReader.h"
+#include "Transform.h"
+#include "SpriteRenderer.h"
+#include "Entity.h"
+#include "LevelManager.h"
 #include "stb_image.h"
 #define STB_IMAGE_IMPLEMENTATION
 void LevelReader::AddBlock(int index, int width, int height)
 {
 	int row = floor((float)index / (float)levelSizeX);
 	int column = index % levelSizeX;
-	Vector3 bottomLeftOfBlock = *topLeftOfWindow + Vector3(column, -row - height, 0);
+	Vector2 bottomLeftOfBlock = *topLeftOfWindow + Vector2(column, -row - height);
 
 	LevelBlock* newBlock = new LevelBlock(bottomLeftOfBlock, width, height, graphics);
 	this->levelBlocks->push_back(newBlock);
-
 }
 
 void LevelReader::ReadLevel(const char* fileName)
@@ -114,12 +117,12 @@ void LevelReader::AddToRead(std::vector<unsigned int>& readVector, int startInde
 		}
 	}
 }
-bool LevelReader::HasBlockAbove(Vector3 pos)
+bool LevelReader::HasBlockAbove(Vector2 pos)
 {
 	for (int i = 0; i < levelBlocks->size(); i++)
 	{
-		Vector3 otherBottomLeft = levelBlocks->at(i)->position;
-		Vector3 otherTopRight = otherBottomLeft + Vector3(levelBlocks->at(i)->dimensions.width - 1, levelBlocks->at(i)->dimensions.height - 1, 0);
+		Vector2 otherBottomLeft = levelBlocks->at(i)->position;
+		Vector2 otherTopRight = otherBottomLeft + Vector2(levelBlocks->at(i)->dimensions.width - 1, levelBlocks->at(i)->dimensions.height - 1);
 		float xMax = otherTopRight.x;
 		float yMax = otherTopRight.y;
 		float xMin = otherBottomLeft.x;
@@ -133,13 +136,12 @@ bool LevelReader::HasBlockAbove(Vector3 pos)
 	}
 	return false;
 }
-bool LevelReader::HasBlockBelow(Vector3 pos)
+bool LevelReader::HasBlockBelow(Vector2 pos)
 {
-
 	for (int i = 0; i < levelBlocks->size(); i++)
 	{
-		Vector3 otherBottomLeft = levelBlocks->at(i)->position;
-		Vector3 otherTopRight = otherBottomLeft + Vector3(levelBlocks->at(i)->dimensions.width, levelBlocks->at(i)->dimensions.height, 0);
+		Vector2 otherBottomLeft = levelBlocks->at(i)->position;
+		Vector2 otherTopRight = otherBottomLeft + Vector2(levelBlocks->at(i)->dimensions.width, levelBlocks->at(i)->dimensions.height);
 		float xMax = otherTopRight.x;
 		float yMax = otherTopRight.y;
 		float xMin = otherBottomLeft.x;
@@ -155,31 +157,40 @@ bool LevelReader::HasBlockBelow(Vector3 pos)
 }
 void LevelReader::CreateLevelDrawables()
 {
-	std::vector<Graphics::LevelBlockVertex> vertices;
-	Vector3 currentPos;
+	std::vector<Graphics::Vertex> vertices;
+	Vector2 currentPos;
+	int a = 0;
 	for (int i = 0; i < levelBlocks->size(); i++)
 	{
+		Vector4 minMaxUV = Vector4(0, 1, 0, 1);
 		for (int j = 0; j < levelBlocks->at(i)->dimensions.height; j++)
 		{
 			for (int k = 0; k < levelBlocks->at(i)->dimensions.width; k++)
 			{
-				currentPos = levelBlocks->at(i)->position + Vector3(k, j, 0);
+				currentPos = levelBlocks->at(i)->position + Vector2(k, j);
+
 				float u1;
 				float u2;
 				float v1;
 				float v2;
 				if (k == 0)
 				{
+					minMaxUV.x = 0;
+					minMaxUV.y = 0.33f;
 					u1 = 0;
 					u2 = 0.33f;
 				}
 				else if (k == levelBlocks->at(i)->dimensions.width - 1)
 				{
+					minMaxUV.x = 0.66f;
+					minMaxUV.y = 1;
 					u1 = 0.66f;
 					u2 = 1;
 				}
 				else
 				{
+					minMaxUV.x = 0.33f;
+					minMaxUV.y = 0.66f;
 					u1 = 0.33f;
 					u2 = 0.66f;
 				}
@@ -188,11 +199,15 @@ void LevelReader::CreateLevelDrawables()
 				{
 					if (HasBlockBelow(currentPos))
 					{
+						minMaxUV.z = 0.33f;
+						minMaxUV.w = 0.66f;
 						v1 = 0.33f;
 						v2 = 0.66f;
 					}
 					else
 					{
+						minMaxUV.z = 0.66f;
+						minMaxUV.w = 1;
 						v1 = 0.66f;
 						v2 = 1;
 					}
@@ -201,41 +216,43 @@ void LevelReader::CreateLevelDrawables()
 				{
 					if (HasBlockAbove(currentPos))
 					{
+						minMaxUV.z = 0.33f;
+						minMaxUV.w = 0.66f;
 						v1 = 0.33f;
 						v2 = 0.66f;
 					}
 					else
 					{
+						minMaxUV.z = 0;
+						minMaxUV.w = 0.33f;
 						v1 = 0;
 						v2 = 0.33f;
 					}
 				}
 				else
 				{
+					minMaxUV.z = 0.33f;
+					minMaxUV.w = 0.66f;
 					v1 = 0.33f;
 					v2 = 0.66f;
 				}
 				vertices.push_back({ currentPos					,Vector2(u1,v2) });
-				vertices.push_back({ currentPos + Vector3(0,1,0),Vector2(u1,v1) });
-				vertices.push_back({ currentPos + Vector3(1,1,0),Vector2(u2,v1) });
+				vertices.push_back({ currentPos + Vector2(0,1),Vector2(u1,v1) });
+				vertices.push_back({ currentPos + Vector2(1,1),Vector2(u2,v1) });
 				vertices.push_back({ currentPos					,Vector2(u1,v2) });
-				vertices.push_back({ currentPos + Vector3(1,1,0),Vector2(u2,v1) });
-				vertices.push_back({ currentPos + Vector3(1,0,0),Vector2(u2,v2) });
+				vertices.push_back({ currentPos + Vector2(1,1),Vector2(u2,v1) });
+				vertices.push_back({ currentPos + Vector2(1,0),Vector2(u2,v2) });
 
 			}
 		}
-		vector<ID3D11Buffer*> vsConstantBuffers;
-		vsConstantBuffers.push_back(graphics->camera.GetViewProjBuffer());
-
-		vector<ID3D11ShaderResourceView*> psResourceViews;
-		psResourceViews.push_back(levelBlocks->at(i)->texture.GetResourceView());
-
-		vector<ID3D11Buffer*> psConstantBuffer;
-		psConstantBuffer.push_back(levelBlocks->at(i)->dimensionsBuffer);
-
-
-		graphics->CreateDrawable(vertices, levelBlockShaders, sizeof(Graphics::LevelBlockVertex)
-			, nullptr, vsConstantBuffers, psResourceViews, psConstantBuffer);
+		Vector2 pos = levelBlocks->at(i)->position;
+		int width = levelBlocks->at(i)->dimensions.width;
+		int height = levelBlocks->at(i)->dimensions.height;
+		std::vector<Component*>* components = new vector<Component*>();
+		components->push_back(new Transform(pos));
+		components->push_back(new BoxCollider(pos, width, height));
+		components->push_back(new SpriteRenderer("Textures/BlockTileSet.png", width, height, graphics, minMaxUV));
+		LevelManager::AddGameObject(new Entity(components));
 
 	}
 }
@@ -243,7 +260,7 @@ void LevelReader::CreateUnit(int index, PixelType type)
 {
 	int row = floor((float)index / (float)levelSizeX);
 	int column = index % levelSizeX;
-	Vector3 position = *topLeftOfWindow + Vector3(column, -row, 0);
+	Vector2 position = *topLeftOfWindow + Vector2(column, -row);
 	if (type == PixelType::PlayerComponent)
 	{
 		playerSpawnPos = position;
@@ -260,5 +277,5 @@ void LevelReader::CreateUnit(int index, PixelType type)
 LevelReader::PixelType LevelReader::GetPixelType(int index)
 {
 	index *= 3;
-	return colorTranslationPair.at(Color(rgb[index],rgb[index+1],rgb[index+2]));
+	return colorTranslationPair.at(Color(rgb[index], rgb[index + 1], rgb[index + 2]));
 }
