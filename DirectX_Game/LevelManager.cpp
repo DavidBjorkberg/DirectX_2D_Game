@@ -4,6 +4,7 @@
 #include "Rigidbody.h"
 #include "Component.h"
 #include "PlayerMovement2.h"
+#include "Physics.h"
 std::vector<Entity*> LevelManager::gameObjects;
 void LevelManager::UpdateComponents(float deltaTime)
 {
@@ -27,13 +28,13 @@ LevelManager::LevelManager(Graphics* graphics)
 	levelReader->ReadLevel("Textures/TestLevel.png");
 	std::vector<Component*>* playerComponents = new vector<Component*>();
 	playerComponents->push_back(new Transform(levelReader->playerSpawnPos));
-	playerComponents->push_back(new BoxCollider(levelReader->playerSpawnPos /*+ Vector2(0.4f, 0.1f)*/, 2, 2)); //TODO: Define width & height better than just '2'. Sprite size?
+	playerComponents->push_back(new BoxCollider(levelReader->playerSpawnPos, 2, 2, Physics::PropLayer)); //TODO: Define width & height better than just '2'. Sprite size?
 	playerComponents->push_back(new SpriteRenderer("Textures/Player_SpriteSheet.png", 2, 2, graphics, Vector4::Zero, "PlayerVertex.hlsl", "PlayerPixel.hlsl"));
 	playerComponents->push_back(new Rigidbody());
 	playerComponents->push_back(new PlayerMovement2());
 	playerGO = new Entity(playerComponents);
 	gameObjects.push_back(playerGO);
-	
+
 	playerGO->GetComponent<Transform>()->SetPosition(levelReader->playerSpawnPos);
 	for (int i = 0; i < levelReader->tallEnemySpawnPos.size(); i++)
 	{

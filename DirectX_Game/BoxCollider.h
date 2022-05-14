@@ -7,5 +7,5 @@ public:
 	bool IsCollidingAfterMove(Collider* other, Vector2 moveVec)override;
 	void Move(Vector2 moveVec)override;
 	BoxCollider();
-	BoxCollider(Vector2 pos, float width, float height);
+	BoxCollider(Vector2 pos, float width, float height, Physics::Layer layer);
 };

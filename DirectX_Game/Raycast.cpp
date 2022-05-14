@@ -1,10 +1,12 @@
 #include "Raycast.h"
-bool RaycastUtility::Raycast(Vector2 origin, Vector2 direction, float maxDistance)
+bool RaycastUtility::Raycast(Vector2 origin, Vector2 direction, float maxDistance, Collider* colliderToIgnore) //TODO: Replace colliderToIgnore with layermask
 {
 	Line ray = Line(origin, origin + direction * maxDistance);
 
 	for (Collider* collider : CollisionHandler::GetAllCollidersInLevel())
 	{
+		if (collider == colliderToIgnore) continue;
+
 		if (LineIntersectRectangle(ray, collider->bottomLeftPos, collider->width, collider->height))
 		{
 			return true;

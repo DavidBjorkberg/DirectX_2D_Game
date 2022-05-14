@@ -7,6 +7,7 @@ void Game::Initialize(HWND handle)
 	CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	graphics = Graphics(handle);
 	mainCamera = new Camera(&graphics);
+	Physics::InitializeLayers();
 	CreateBackground();
 	levelManager = LevelManager(&graphics);
 	mainCamera->SetFollowTarget(levelManager.playerGO);

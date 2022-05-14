@@ -103,6 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -239,6 +240,7 @@
     <ClInclude Include="LevelBlock.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="LevelReader.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerGameObject.h" />
     <ClInclude Include="PlayerMovement.h" />
@@ -269,6 +271,7 @@
     <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="LevelReader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovement.cpp" />
     <ClCompile Include="PlayerMovement2.cpp" />

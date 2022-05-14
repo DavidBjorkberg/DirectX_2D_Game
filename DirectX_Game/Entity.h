@@ -2,10 +2,11 @@
 #include "Component.h"
 #include <vector>
 #include <SimpleMath.h>
+#include <string>
 class Entity
 {
 public:
-	Entity(std::vector<Component*>* components);
+	Entity(std::vector<Component*>* components, std::string name = "Entity");
 	template <typename T>
 	inline T* GetComponent()
 	{
@@ -34,7 +35,9 @@ public:
 		}
 		return returnList;
 	}
+	std::vector<Component*>* GetComponentList();
 	void UpdateComponents(float deltaTime);
+	std::string name;
 
 private:
 	std::vector<Component*>* components;

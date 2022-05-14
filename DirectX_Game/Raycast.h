@@ -19,11 +19,11 @@ public:
 class RaycastUtility //TODO: Change name
 {
 public:
-	bool Raycast(Vector2 origin, Vector2 direction, float maxDistance); //TODO: Add layermask
+	static bool Raycast(Vector2 origin, Vector2 direction, float maxDistance, Collider* colliderToIgnore); //TODO: Add layermask
 
 private:
-	bool LineIntersectRectangle(Line ray, Vector2 rectPos, float rectWidth, float rectHeight);
-	bool LineIntersectLine(Line line1, Line line2);
-	bool OnSegment(Vector2 p, Vector2 q, Vector2 r);
-	int GetOrientation(Vector2 p, Vector2 q, Vector2 r);
+	static bool LineIntersectRectangle(Line ray, Vector2 rectPos, float rectWidth, float rectHeight);
+	static bool LineIntersectLine(Line line1, Line line2);
+	static bool OnSegment(Vector2 p, Vector2 q, Vector2 r);
+	static int GetOrientation(Vector2 p, Vector2 q, Vector2 r);
 };

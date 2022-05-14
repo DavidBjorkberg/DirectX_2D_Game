@@ -20,6 +20,7 @@ void SpriteRenderer::UpdateAnimationBuffer(const void* data)
 
 void SpriteRenderer::Initialize(void* owner)
 {
+	Component::Initialize(owner);
 	sprite.Initialize(graphics->device, graphics->deviceContext, pathToSprite);
 
 	vector<ID3D11Buffer*> vsConstantBuffers;

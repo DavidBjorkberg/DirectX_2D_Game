@@ -3,7 +3,7 @@
 #include "Game.h"
 #include "Rigidbody.h"
 #include "Input.h"
-
+#include "Raycast.h"
 PlayerMovement2::PlayerMovement2()
 {
 }
@@ -37,7 +37,7 @@ void PlayerMovement2::HandleInput(float deltaTime)
 	}
 	//if (Input::keyboard->GetState().IsKeyDown(DirectX::Keyboard::Space))
 	{
-		if (Input::KeyPressed(DirectX::Keyboard::Space))
+		if (Input::KeyPressed(DirectX::Keyboard::Space) && RaycastUtility::Raycast(this->transform->GetPosition(), Vector2(0, -1), 1, static_cast<Entity*>(owner)->GetComponent<Collider>()))
 		{
 			rigidbody->AddVelocity(Vector2(0, 0.005f), Rigidbody::VelocityMode::Set);
 		}

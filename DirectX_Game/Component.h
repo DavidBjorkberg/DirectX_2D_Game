@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 class Component
 {
 public:
@@ -8,3 +9,4 @@ public:
 protected:
 	void* owner;
 };
+

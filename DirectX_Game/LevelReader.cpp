@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "LevelManager.h"
 #include "stb_image.h"
+#include "Physics.h"
 #define STB_IMAGE_IMPLEMENTATION
 void LevelReader::AddBlock(int index, int width, int height)
 {
@@ -250,7 +251,7 @@ void LevelReader::CreateLevelDrawables()
 		int height = levelBlocks->at(i)->dimensions.height;
 		std::vector<Component*>* components = new vector<Component*>();
 		components->push_back(new Transform(pos));
-		components->push_back(new BoxCollider(pos, width, height));
+		components->push_back(new BoxCollider(pos, width, height, Physics::GroundLayer));
 		components->push_back(new SpriteRenderer("Textures/BlockTileSet.png", width, height, graphics, minMaxUV));
 		LevelManager::AddGameObject(new Entity(components));
 
