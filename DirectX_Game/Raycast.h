@@ -19,7 +19,7 @@ public:
 class RaycastUtility //TODO: Change name
 {
 public:
-	static bool Raycast(Vector2 origin, Vector2 direction, float maxDistance, Collider* colliderToIgnore); //TODO: Add layermask
+	static bool Raycast(Vector2 origin, Vector2 direction, float maxDistance, int ignoreLayerMask); 
 
 private:
 	static bool LineIntersectRectangle(Line ray, Vector2 rectPos, float rectWidth, float rectHeight);

@@ -35,11 +35,8 @@ void PlayerMovement2::HandleInput(float deltaTime)
 	{
 		this->transform->TryMove(moveDirection * movementSpeed * deltaTime, false);
 	}
-	//if (Input::keyboard->GetState().IsKeyDown(DirectX::Keyboard::Space))
+	if (Input::KeyPressed(DirectX::Keyboard::Space) && RaycastUtility::Raycast(this->transform->GetPosition(), Vector2(0, -1), 1, static_cast<Entity*>(owner)->GetComponent<Collider>()->layer.CollisionMask))
 	{
-		if (Input::KeyPressed(DirectX::Keyboard::Space) && RaycastUtility::Raycast(this->transform->GetPosition(), Vector2(0, -1), 1, static_cast<Entity*>(owner)->GetComponent<Collider>()))
-		{
-			rigidbody->AddVelocity(Vector2(0, 0.005f), Rigidbody::VelocityMode::Set);
-		}
+		rigidbody->AddVelocity(Vector2(0, 0.005f), Rigidbody::VelocityMode::Set);
 	}
 }
