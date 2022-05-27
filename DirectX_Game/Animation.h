@@ -3,29 +3,26 @@
 #include"Graphics.h"
 #include <map>
 #include <functional>
+#include "Texture.h"
+#include "SpriteRenderer.h"
 class Animation
 {
 public:
-	enum class AnimationType
-	{
-		Attack, Death, Hit, Idle, Jump, Run,
-	};
 	std::vector <std::pair<std::function<bool()>, Animation*>> transitionPairs; 
-	Animation* Play(ID3D11Buffer* animationBuffer);
+	Animation* Play(SpriteRenderer* spriteRenderer);
 	bool isPlaying;
 	bool loop;
-	AnimationType animationType;
-	void Update(float deltaTime, ID3D11Buffer* animationBuffer);
+	void Update(float deltaTime, SpriteRenderer* spriteRenderer);
 	Animation();
-	Animation(Graphics* graphics, AnimationType animationType, bool loop = true, int FPS = 5);
+	Animation(Graphics* graphics,string spriteSheetPath, bool loop = true, int FPS = 5);
 private:
 	struct AnimationData
 	{
-		int startFrameY;
-		int currentFrame;
+ 		int currentFrame;
 	};
 	AnimationData animationData;
 	Graphics* graphics;
+	Texture spriteSheet;
 	int FPS;
 	float currentFrameTimer;
 };

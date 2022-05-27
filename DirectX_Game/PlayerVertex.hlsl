@@ -19,13 +19,13 @@ cbuffer vsBuffer : register(b1)
 };
 cbuffer vsBuffer : register(b2)
 {
-	int startFrameY;
-	int currentFrame;
+	float4 FlippedXY;
 };
 cbuffer vsBuffer : register(b3)
 {
-	bool isFacingRight;
+	int currentFrame;
 };
+
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output;
@@ -35,16 +35,15 @@ VS_OUT main(VS_IN input)
 	output.position = mul(output.position, viewProjTrans);
 
 	float offsetX = 1.0f / 8.0f;
-	float offsetY = 1.0f / 6.0f;
-	if (isFacingRight)
+	if (FlippedXY.x == 0)
 	{
-		output.uv = float2(input.uv.x * offsetX, input.uv.y * offsetY);
-		output.uv += float2(offsetX * currentFrame, offsetY * startFrameY);
+		output.uv = float2(input.uv.x * offsetX, input.uv.y );
+		output.uv += float2(offsetX * currentFrame, 0);
 	}
 	else
 	{
-		output.uv = float2(1 - input.uv.x * offsetX, input.uv.y * offsetY);
-		output.uv += float2(-offsetX * (7 - currentFrame), offsetY * startFrameY);
+		output.uv = float2(1 - input.uv.x * offsetX, input.uv.y );
+		output.uv += float2(-offsetX * (7 - currentFrame), 0);
 	}
 	return output;
 }

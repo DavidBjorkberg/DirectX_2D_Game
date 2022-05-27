@@ -1,7 +1,9 @@
 #include "Game.h"
 Camera* Game::mainCamera;
 Input* Game::input;
-
+//TODO:
+//Merge all shaders into one?
+//Make all member variables start with capital
 void Game::Initialize(HWND handle)
 {
 	CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);

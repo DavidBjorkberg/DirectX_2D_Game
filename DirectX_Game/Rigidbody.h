@@ -14,6 +14,7 @@ public:
 	virtual void Initialize(void* owner)override;
 	void SetGravity(float newGravity);
 	void AddVelocity(Vector2 newVelocity, VelocityMode velocityMode);
+	Vector2 GetVelocity();
 private:
 
 	void ApplyGravity(float deltaTime);

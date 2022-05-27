@@ -12,7 +12,7 @@ public:
 		DirectX::SimpleMath::Vector2 pos;
 		DirectX::SimpleMath::Vector2 UV;
 	};
-	struct DrawableStruct
+	struct Drawable
 	{
 		ShaderClass* shaders;
 		ID3D11Buffer* vertexBuffer;
@@ -31,7 +31,7 @@ public:
 	ID3D11Buffer* squareIndexBuffer;
 
 	bool Init();
-	int CreateDrawable(std::vector<Vertex> vertices,ShaderClass* shaders,UINT vertexSize
+	Drawable* CreateDrawable(std::vector<Vertex> vertices,ShaderClass* shaders,UINT vertexSize
 		,ID3D11Buffer* indexBuffer,vector<ID3D11Buffer*> vsConstantBuffers = vector<ID3D11Buffer*>()
 		, vector<ID3D11ShaderResourceView*> psResourceViews = vector<ID3D11ShaderResourceView*>(), vector<ID3D11Buffer*> psConstantBuffers = vector<ID3D11Buffer*>());
 	void RemoveDrawable(int index);
@@ -47,6 +47,6 @@ private:
 	void InitSampler();
 	HRESULT CreateDirect3DContext(HWND wndHandle);
 	HWND handle;
-	std::vector<DrawableStruct*> drawables;
+	std::vector<Drawable*> drawables;
 	ID3D11SamplerState* sampler;
 };

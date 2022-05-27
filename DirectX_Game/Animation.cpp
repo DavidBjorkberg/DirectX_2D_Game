@@ -4,18 +4,17 @@ Animation::Animation()
 {
 }
 
-Animation::Animation(Graphics* graphics, AnimationType animationType, bool loop, int FPS)
+Animation::Animation(Graphics* graphics, string spriteSheetPath, bool loop, int FPS)
 {
 	this->graphics = graphics;
-	this->animationType = animationType;
 	this->FPS = FPS;
 	this->loop = loop;
 	animationData.currentFrame = 0;
 	currentFrameTimer = 0;
-	animationData.startFrameY = (int)animationType;
+	spriteSheet.Initialize(graphics->device, graphics->deviceContext, spriteSheetPath);
 }
 
-void Animation::Update(float deltaTime, ID3D11Buffer* animationBuffer)
+void Animation::Update(float deltaTime, SpriteRenderer* spriteRenderer)
 {
 	currentFrameTimer += deltaTime;
 	if (isPlaying && currentFrameTimer >= 1.0f / FPS)
@@ -36,17 +35,17 @@ void Animation::Update(float deltaTime, ID3D11Buffer* animationBuffer)
 		{
 			currentFrameTimer = 0;
 			animationData.currentFrame++;
-			
-			graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
+			spriteRenderer->UpdateAnimationBuffer(&animationData);
 		}
 	}
 }
 
-Animation* Animation::Play(ID3D11Buffer* animationBuffer)
+Animation* Animation::Play(SpriteRenderer* spriteRenderer)
 {
 	isPlaying = true;
 	currentFrameTimer = 0;
 	animationData.currentFrame = 0;
-	graphics->MapToBuffer(animationBuffer, &animationData, sizeof(AnimationData));
+	spriteRenderer->UpdateAnimationBuffer(&animationData);
+	spriteRenderer->SetAnimationSprite(&spriteSheet);
 	return this;
 }

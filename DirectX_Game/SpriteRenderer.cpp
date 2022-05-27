@@ -26,10 +26,12 @@ void SpriteRenderer::Initialize(void* owner)
 	vector<ID3D11Buffer*> vsConstantBuffers;
 	vsConstantBuffers.push_back(Game::GetMainCamera()->GetViewProjBuffer());
 	vsConstantBuffers.push_back(positionBuffer);
-	//vsConstantBuffers.push_back(animationBuffer);
+	vsConstantBuffers.push_back(flipBuffer);
+	vsConstantBuffers.push_back(animationBuffer);
 	//vsConstantBuffers.push_back(rotationBuffer);
 	vector<ID3D11ShaderResourceView*> psResourceViews;
 	psResourceViews.push_back(sprite.GetResourceView());
+	psResourceViews.push_back(NULL);
 
 	std::vector<Graphics::Vertex> vertices;
 
@@ -50,7 +52,7 @@ void SpriteRenderer::Initialize(void* owner)
 	shaders->CreatePS(graphics->device, stemp.c_str());
 
 
-	graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::Vertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
+	thisDrawable = graphics->CreateDrawable(vertices, shaders, sizeof(Graphics::Vertex), graphics->squareIndexBuffer, vsConstantBuffers, psResourceViews);
 }
 
 SpriteRenderer::SpriteRenderer(std::string pathToSprite, int width, int height, Graphics* graphics, Vector4 minMaxUV, std::string vertexShader, std::string pixelShader)
@@ -63,6 +65,24 @@ SpriteRenderer::SpriteRenderer(std::string pathToSprite, int width, int height, 
 	this->pixelShader = pixelShader;
 	this->minMaxUV = minMaxUV == Vector4::Zero ? Vector4(0, 1, 0, 1) : minMaxUV;
 	graphics->CreateConstantBuffer(&positionBuffer, sizeof(DirectX::SimpleMath::Matrix));
-	graphics->CreateConstantBuffer(&rotationBuffer, 16);
-	graphics->CreateConstantBuffer(&animationBuffer, 16);
+	graphics->CreateConstantBuffer(&rotationBuffer, sizeof(DirectX::SimpleMath::Matrix));
+	graphics->CreateConstantBuffer(&animationBuffer, sizeof(DirectX::SimpleMath::Matrix));
+	graphics->CreateConstantBuffer(&flipBuffer, sizeof(DirectX::SimpleMath::Matrix));
+}
+
+void SpriteRenderer::SetFlipX(bool flipX)
+{
+	this->FlippedXY.x = flipX;
+	this->graphics->MapToBuffer(flipBuffer, &FlippedXY, sizeof(Vector2));
+}
+
+void SpriteRenderer::SetFlipY(bool flipY)
+{
+	this->FlippedXY.y = flipY;
+	this->graphics->MapToBuffer(flipBuffer, &FlippedXY, sizeof(Vector2));
+}
+
+void SpriteRenderer::SetAnimationSprite(Texture* sprite)
+{
+	thisDrawable->psResourceViews[1] = sprite->GetResourceView();
 }

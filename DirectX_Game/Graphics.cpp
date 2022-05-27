@@ -79,7 +79,7 @@ HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 	return hr;
 }
 
-int Graphics::CreateDrawable(std::vector<Vertex> vertices, ShaderClass* shaders
+Graphics::Drawable* Graphics::CreateDrawable(std::vector<Vertex> vertices, ShaderClass* shaders
 	, UINT vertexSize, ID3D11Buffer* indexBuffer, vector<ID3D11Buffer*> vsConstantBuffers
 	, vector<ID3D11ShaderResourceView*> psResourceViews, vector<ID3D11Buffer*> psConstantBuffers)
 {
@@ -96,7 +96,7 @@ int Graphics::CreateDrawable(std::vector<Vertex> vertices, ShaderClass* shaders
 	data.pSysMem = vertices.data();
 	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 
-	DrawableStruct* drawable = new DrawableStruct();
+	Drawable* drawable = new Drawable();
 	drawable->shaders = shaders;
 	drawable->vertexSize = vertexSize;
 	drawable->indexBuffer = indexBuffer;
@@ -107,7 +107,7 @@ int Graphics::CreateDrawable(std::vector<Vertex> vertices, ShaderClass* shaders
 	drawable->vertexBuffer = vertexBuffer;
 	drawable->index = drawables.size();
 	drawables.push_back(drawable);
-	return drawables.size() - 1;
+	return drawable;
 }
 
 void Graphics::RemoveDrawable(int index)

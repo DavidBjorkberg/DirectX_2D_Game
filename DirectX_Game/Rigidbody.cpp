@@ -43,3 +43,8 @@ void Rigidbody::AddVelocity(Vector2 newVelocity, VelocityMode velocityMode)
 		break;
 	}
 }
+
+Vector2 Rigidbody::GetVelocity()
+{
+	return curVelocity;
+}

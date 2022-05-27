@@ -170,30 +170,20 @@ void LevelReader::CreateLevelDrawables()
 			{
 				currentPos = levelBlocks->at(i)->position + Vector2(k, j);
 
-				float u1;
-				float u2;
-				float v1;
-				float v2;
 				if (k == 0)
 				{
 					minMaxUV.x = 0;
 					minMaxUV.y = 0.33f;
-					u1 = 0;
-					u2 = 0.33f;
 				}
 				else if (k == levelBlocks->at(i)->dimensions.width - 1)
 				{
 					minMaxUV.x = 0.66f;
 					minMaxUV.y = 1;
-					u1 = 0.66f;
-					u2 = 1;
 				}
 				else
 				{
 					minMaxUV.x = 0.33f;
 					minMaxUV.y = 0.66f;
-					u1 = 0.33f;
-					u2 = 0.66f;
 				}
 
 				if (j == 0)
@@ -202,15 +192,11 @@ void LevelReader::CreateLevelDrawables()
 					{
 						minMaxUV.z = 0.33f;
 						minMaxUV.w = 0.66f;
-						v1 = 0.33f;
-						v2 = 0.66f;
 					}
 					else
 					{
 						minMaxUV.z = 0.66f;
 						minMaxUV.w = 1;
-						v1 = 0.66f;
-						v2 = 1;
 					}
 				}
 				else if (j == levelBlocks->at(i)->dimensions.height - 1)
@@ -219,41 +205,27 @@ void LevelReader::CreateLevelDrawables()
 					{
 						minMaxUV.z = 0.33f;
 						minMaxUV.w = 0.66f;
-						v1 = 0.33f;
-						v2 = 0.66f;
 					}
 					else
 					{
 						minMaxUV.z = 0;
 						minMaxUV.w = 0.33f;
-						v1 = 0;
-						v2 = 0.33f;
 					}
 				}
 				else
 				{
 					minMaxUV.z = 0.33f;
 					minMaxUV.w = 0.66f;
-					v1 = 0.33f;
-					v2 = 0.66f;
 				}
-				vertices.push_back({ currentPos					,Vector2(u1,v2) });
-				vertices.push_back({ currentPos + Vector2(0,1),Vector2(u1,v1) });
-				vertices.push_back({ currentPos + Vector2(1,1),Vector2(u2,v1) });
-				vertices.push_back({ currentPos					,Vector2(u1,v2) });
-				vertices.push_back({ currentPos + Vector2(1,1),Vector2(u2,v1) });
-				vertices.push_back({ currentPos + Vector2(1,0),Vector2(u2,v2) });
-
+				int width = levelBlocks->at(i)->dimensions.width;
+				int height = levelBlocks->at(i)->dimensions.height;
+				std::vector<Component*>* components = new vector<Component*>();
+				components->push_back(new Transform(currentPos));
+				components->push_back(new BoxCollider(currentPos, 2, 2, Physics::GroundLayer));
+				components->push_back(new SpriteRenderer("Textures/BlockTileSet.png", 2, 2, graphics, minMaxUV));
+				LevelManager::AddGameObject(new Entity(components));
 			}
 		}
-		Vector2 pos = levelBlocks->at(i)->position;
-		int width = levelBlocks->at(i)->dimensions.width;
-		int height = levelBlocks->at(i)->dimensions.height;
-		std::vector<Component*>* components = new vector<Component*>();
-		components->push_back(new Transform(pos));
-		components->push_back(new BoxCollider(pos, width, height, Physics::GroundLayer));
-		components->push_back(new SpriteRenderer("Textures/BlockTileSet.png", width, height, graphics, minMaxUV));
-		LevelManager::AddGameObject(new Entity(components));
 
 	}
 }

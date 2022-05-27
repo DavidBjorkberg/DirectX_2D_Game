@@ -1,7 +1,8 @@
 #include "AnimationController.h"
+#include "Entity.h"
 void AnimationController::Update(float deltaTime)
 {
-	//currentPlayingAnimation->Update(deltaTime);
+	currentPlayingAnimation->Update(deltaTime,spriteRenderer);
 	CheckTransitions();
 }
 
@@ -20,7 +21,15 @@ void AnimationController::CheckTransitions()
 void AnimationController::PlayAnimation(Animation* anim)
 {
 	currentPlayingAnimation = anim;
-	anim->Play(animationBuffer);
+	anim->Play(spriteRenderer);
+}
+
+void AnimationController::Initialize(void* owner)
+{
+	Component::Initialize(owner);
+	this->spriteRenderer = static_cast<Entity*>(owner)->GetComponent<SpriteRenderer>();
+	assert(animations.size() > 0);
+	PlayAnimation(animations[0]);
 }
 
 

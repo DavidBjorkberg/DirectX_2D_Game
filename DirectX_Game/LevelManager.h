@@ -22,4 +22,5 @@ private:
 	LevelReader* levelReader;
 	static std::vector<Entity*> gameObjects;
 	void UpdateEnemies(float deltaTime);
+	void CreatePlayer();
 };

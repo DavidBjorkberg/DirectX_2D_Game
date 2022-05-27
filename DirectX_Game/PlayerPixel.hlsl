@@ -5,10 +5,11 @@ struct VS_OUT
 };
 SamplerState _sampler : register(s0);
 Texture2D colourTex : register(t0);
+Texture2D animationTex : register(t1);
 
 float4 main(VS_OUT input) : SV_TARGET
 {
-	float4 textureColor = colourTex.Sample(_sampler, input.uv);
+	float4 textureColor = animationTex.Sample(_sampler, input.uv);
 	if (textureColor.x == 1 && textureColor.y == 1 && textureColor.z == 0)
 	{
 		clip(-1);
