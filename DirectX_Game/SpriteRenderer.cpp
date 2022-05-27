@@ -70,6 +70,10 @@ SpriteRenderer::SpriteRenderer(std::string pathToSprite, int width, int height, 
 	graphics->CreateConstantBuffer(&flipBuffer, sizeof(DirectX::SimpleMath::Matrix));
 }
 
+SpriteRenderer::SpriteRenderer()
+{
+}
+
 void SpriteRenderer::SetFlipX(bool flipX)
 {
 	this->FlippedXY.x = flipX;

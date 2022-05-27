@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "Transform.h"
+#include "SpriteRenderer.h"
 Camera* Game::mainCamera;
 Input* Game::input;
 //TODO:
@@ -44,26 +46,10 @@ Game::~Game()
 
 void Game::CreateBackground()
 {
-	/*backgroundTexture.Initialize(graphics.device, graphics.deviceContext, "Textures/Background.png");
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-	{
-		{"SV_POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
-		{"UV", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
-	};
-	UINT numElements = ARRAYSIZE(inputDesc);
-	backgroundShaders.CreateVS(graphics.device, L"BGVertex.hlsl", inputDesc, numElements);
-	backgroundShaders.CreatePS(graphics.device, L"BGPixel.hlsl");
-	std::vector<Graphics::Vertex> vertices;
-	vertices.push_back({ Vector3(-1,1,0),Vector2(0,0), });
-	vertices.push_back({ Vector3(1,-1,0),Vector2(1,1), });
-	vertices.push_back({ Vector3(-1,-1,0),Vector2(0,1), });
-	vertices.push_back({ Vector3(1,1,0),Vector2(1,0), });
+	std::vector<Component*>* playerComponents = new vector<Component*>();
+	playerComponents->push_back(new SpriteRenderer("Textures/Background.png", 2, 2, &graphics, Vector4::Zero, "BGVertex.hlsl", "BGPixel.hlsl"));
 
-	vector<ID3D11ShaderResourceView*> psResourceViews;
-	psResourceViews.push_back(backgroundTexture.GetResourceView());
-
-	graphics.CreateDrawable(vertices, &backgroundShaders, sizeof(Graphics::Vertex)
-		, graphics.squareIndexBuffer, vector<ID3D11Buffer*>(), psResourceViews);*/
+	levelManager.AddGameObject(new Entity(playerComponents));
 }
 
 void Game::CreateHealthUI()
