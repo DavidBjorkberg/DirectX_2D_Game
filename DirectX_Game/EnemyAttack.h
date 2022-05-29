@@ -8,9 +8,9 @@ using namespace DirectX::SimpleMath;
 class EnemyAttack : public Component
 {
 public:
+	EnemyAttack();
 	virtual void Initialize(void* owner) override;
 	virtual void Update(float deltaTime) override;
-	EnemyAttack();
 	bool attackTrigger;
 private:
 	Transform* transform;

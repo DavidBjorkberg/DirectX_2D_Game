@@ -9,14 +9,13 @@ using namespace DirectX::SimpleMath;
 class LevelReader
 {
 public:
+	LevelReader();
+	LevelReader(Graphics* graphics, std::vector<LevelBlock*>* level);
+	void AddBlock(int index, int width, int height);
+	void ReadLevel(const char* fileName);
 	Vector2 playerSpawnPos;
 	std::vector<Vector2> tallEnemySpawnPos;
 	std::vector<Vector2> shortEnemySpawnPos;
-
-	void AddBlock(int index, int width, int height);
-	void ReadLevel(const char* fileName);
-	LevelReader();
-	LevelReader(Graphics* graphics, std::vector<LevelBlock*>* level);
 private:
 	enum class PixelType
 	{

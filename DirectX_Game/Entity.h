@@ -7,6 +7,7 @@ class Entity
 {
 public:
 	Entity(std::vector<Component*>* components, std::string name = "Entity");
+	virtual ~Entity();
 	template <typename T>
 	inline T* GetComponent()
 	{
@@ -35,9 +36,8 @@ public:
 		}
 		return returnList;
 	}
-	std::vector<Component*>* GetComponentList();
 	void UpdateComponents(float deltaTime);
-	std::string name;
+	std::vector<Component*>* GetComponentList();
 
 private:
 	std::vector<Component*>* components;

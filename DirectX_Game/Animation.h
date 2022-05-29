@@ -8,13 +8,13 @@
 class Animation
 {
 public:
-	std::vector <std::pair<std::function<bool()>, Animation*>> transitionPairs; 
-	Animation* Play(SpriteRenderer* spriteRenderer);
-	bool isPlaying;
-	bool loop;
-	void Update(float deltaTime, SpriteRenderer* spriteRenderer);
 	Animation();
 	Animation(Graphics* graphics,string spriteSheetPath, bool loop = true, int FPS = 5);
+	void Update(float deltaTime, SpriteRenderer* spriteRenderer);
+	Animation* Play(SpriteRenderer* spriteRenderer);
+	std::vector <std::pair<std::function<bool()>, Animation*>> transitionPairs; 
+	bool isPlaying;
+	bool loop;
 private:
 	struct AnimationData
 	{

@@ -53,16 +53,10 @@
     <ClInclude Include="Entity.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="BoxCollider.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="CollisionHandler.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
@@ -80,25 +74,10 @@
     <ClInclude Include="LevelReader.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMovement.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Shaders.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShortBoyEnemy.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TallBoyEnemy.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerGameObject.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
@@ -122,7 +101,7 @@
     <ClInclude Include="Collider.h">
       <Filter>Source Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerMovement2.h">
+    <ClInclude Include="PlayerMovement.h">
       <Filter>Source Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="Raycast.h">
@@ -146,6 +125,9 @@
     <ClInclude Include="EnemyAttack.h">
       <Filter>Source Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -155,9 +137,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
@@ -178,19 +157,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMovement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shaders.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShortBoyEnemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TallBoyEnemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -214,35 +181,32 @@
     <ClCompile Include="Transform.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Rigidbody.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMovement2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Raycast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Physics.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Rigidbody.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyMovement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HealthComponent.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="PlayerMovement.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAttack.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMovement.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="EnemyAttack.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

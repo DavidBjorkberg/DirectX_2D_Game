@@ -5,6 +5,7 @@
 class VertexShader
 {
 public:
+	VertexShader();
 	bool Initialize(ID3D11Device* device, LPCWSTR shaderpath, D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements);
 	ID3D11VertexShader* GetShader();
 	ID3D10Blob* GetBuffer();
@@ -18,6 +19,7 @@ private:
 class PixelShader
 {
 public:
+	PixelShader();
 	bool Initialize(ID3D11Device* device, LPCWSTR shaderpath);
 	ID3D11PixelShader* GetShader();
 private:
@@ -27,6 +29,7 @@ private:
 class ShaderClass
 {
 public:
+	ShaderClass();
 	VertexShader vs;
 	PixelShader ps;
 	bool CreatePS(ID3D11Device* device, LPCWSTR fileName);

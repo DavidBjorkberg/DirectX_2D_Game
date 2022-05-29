@@ -9,6 +9,7 @@ public:
 		Add,
 		Set
 	};
+	Rigidbody();
 	virtual void Update(float deltaTime)override;
 	virtual void LateUpdate(float deltaTime)override;
 	virtual void Initialize(void* owner)override;

@@ -45,6 +45,17 @@ Graphics::Graphics()
 }
 Graphics::~Graphics()
 {
+	for (int i = 0; i < drawables.size(); i++)
+	{
+		delete drawables[i];
+	}
+	delete sampler;
+	delete renderTargetView;
+	delete device;
+	delete deviceContext;
+	delete swapChain;
+	delete squareIndexBuffer;
+
 }
 HRESULT Graphics::CreateDirect3DContext(HWND wndHandle)
 {

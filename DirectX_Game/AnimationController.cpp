@@ -2,17 +2,17 @@
 #include "Entity.h"
 void AnimationController::Update(float deltaTime)
 {
-	currentPlayingAnimation->Update(deltaTime,spriteRenderer);
+	CurrentPlayingAnimation->Update(deltaTime, SpriteRenderer);
 	CheckTransitions();
 }
 
 void AnimationController::CheckTransitions()
 {
-	for (int i = 0; i < currentPlayingAnimation->transitionPairs.size(); i++)
+	for (int i = 0; i < CurrentPlayingAnimation->transitionPairs.size(); i++)
 	{
-		if (currentPlayingAnimation->transitionPairs[i].first())
+		if (CurrentPlayingAnimation->transitionPairs[i].first())
 		{
-			PlayAnimation(currentPlayingAnimation->transitionPairs[i].second);
+			PlayAnimation(CurrentPlayingAnimation->transitionPairs[i].second);
 			break;
 		}
 	}
@@ -20,16 +20,28 @@ void AnimationController::CheckTransitions()
 
 void AnimationController::PlayAnimation(Animation* anim)
 {
-	currentPlayingAnimation = anim;
-	anim->Play(spriteRenderer);
+	CurrentPlayingAnimation = anim;
+	anim->Play(SpriteRenderer);
 }
 
 void AnimationController::Initialize(void* owner)
 {
 	Component::Initialize(owner);
-	this->spriteRenderer = static_cast<Entity*>(owner)->GetComponent<SpriteRenderer>();
-	assert(animations.size() > 0);
-	PlayAnimation(animations[0]);
+	this->SpriteRenderer = static_cast<Entity*>(owner)->GetComponent<SpriteRenderer>();
+	assert(Animations.size() > 0);
+	PlayAnimation(Animations[0]);
+}
+
+AnimationController::AnimationController()
+{
+}
+
+AnimationController::~AnimationController()
+{
+	for (int i = 0; i < Animations.size(); i++)
+	{
+		delete Animations[i];
+	}
 }
 
 

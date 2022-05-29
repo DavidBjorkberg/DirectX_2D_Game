@@ -3,11 +3,15 @@
 Entity::Entity(std::vector<Component*>* components, std::string name)
 {
 	this->components = components;
-	this->name = name;
 	for (Component* component : *components)
 	{
 		component->Initialize(this);
 	}
+}
+
+Entity::~Entity()
+{
+	delete[] components;
 }
 
 std::vector<Component*>* Entity::GetComponentList()

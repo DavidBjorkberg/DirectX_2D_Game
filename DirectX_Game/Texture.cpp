@@ -7,6 +7,12 @@ Texture::Texture()
 {
 }
 
+Texture::~Texture()
+{
+	delete texture;
+	delete textureView;
+}
+
 void Texture::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, std::string fileName)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;

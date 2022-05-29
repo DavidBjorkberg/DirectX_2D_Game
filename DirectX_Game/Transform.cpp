@@ -7,6 +7,10 @@ DirectX::SimpleMath::Vector2 Transform::GetPosition()
 	return this->position;
 }
 
+Transform::Transform()
+{
+}
+
 Transform::Transform(Vector2 position)
 {
 	this->position = position; //Set position with this value is called in Initialize()

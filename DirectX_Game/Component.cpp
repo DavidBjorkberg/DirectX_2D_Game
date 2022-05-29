@@ -17,3 +17,11 @@ void* Component::GetOwner()
 {
 	return owner;
 }
+
+Component::Component()
+{
+}
+
+Component::~Component()
+{
+}

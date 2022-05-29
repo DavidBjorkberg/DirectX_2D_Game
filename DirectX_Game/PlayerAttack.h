@@ -2,17 +2,17 @@
 #include "Component.h"
 #include "SimpleMath.h"
 #include "Transform.h"
-#include "PlayerMovement2.h"
+#include "PlayerMovement.h"
 using namespace DirectX::SimpleMath;
 class PlayerAttack : public Component
 {
 public:
+	PlayerAttack();
 	virtual void Initialize(void* owner) override;
 	virtual void Update(float deltaTime) override;
-	PlayerAttack();
 private:
 	void Attack();
 	Transform* transform;
-	PlayerMovement2* playerMovement;
+	PlayerMovement* playerMovement;
 	int damage = 1;
 };

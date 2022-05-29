@@ -46,6 +46,19 @@ LevelManager::LevelManager(Graphics* graphics)
 	}
 }
 
+LevelManager::~LevelManager()
+{
+	delete levelReader;
+	for (int i = 0; i < level.size(); i++)
+	{
+		delete level[i];
+	}
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		delete gameObjects[i];
+	}
+}
+
 void LevelManager::CreateEnemy(Vector2 position, string type)
 {
 	std::vector<Component*>* components = new vector<Component*>();
@@ -66,9 +79,9 @@ void LevelManager::CreateEnemy(Vector2 position, string type)
 	Animation* AttackAnimation = new Animation(graphics, "Textures/SpriteSheets/" + type + "_Attack_Anim.png", false);
 
 	runAnimation->transitionPairs = { std::make_pair([healthComponent]() {
-	if (healthComponent->TookDamageTrigger)
+	if (healthComponent->tookDamageTrigger)
 	{
-		healthComponent->TookDamageTrigger = false;
+		healthComponent->tookDamageTrigger = false;
 		return true;
 	}
 	else
@@ -88,7 +101,7 @@ void LevelManager::CreateEnemy(Vector2 position, string type)
 
 	TakeDamageAnimation->transitionPairs = { std::make_pair([TakeDamageAnimation]() {return !TakeDamageAnimation->isPlaying; },runAnimation) };
 	AttackAnimation->transitionPairs = { std::make_pair([AttackAnimation]() {return !AttackAnimation->isPlaying; },runAnimation) };
-	animationController->animations = { runAnimation,TakeDamageAnimation, AttackAnimation };
+	animationController->Animations = { runAnimation,TakeDamageAnimation, AttackAnimation };
 
 	gameObjects.push_back(new Entity(components));
 }
@@ -139,7 +152,7 @@ void LevelManager::CreatePlayer()
 	}}, jumpAnimation)
 	};
 	jumpAnimation->transitionPairs = { std::make_pair([playerMovement,rigidBody]() {return playerMovement->IsGrounded() && rigidBody->GetVelocity().y <= 0; }, idleAnimation) };
-	animationController->animations = { idleAnimation, runAnimation,jumpAnimation, TakeDamageAnimation, AttackAnimation };
+	animationController->Animations = { idleAnimation, runAnimation,jumpAnimation, TakeDamageAnimation, AttackAnimation };
 
 	playerGO = new Entity(playerComponents);
 	gameObjects.push_back(playerGO);

@@ -1,6 +1,10 @@
 #include "Rigidbody.h"
 #include "Entity.h"
 
+Rigidbody::Rigidbody()
+{
+}
+
 void Rigidbody::Update(float deltaTime)
 {
 	ApplyGravity(deltaTime);

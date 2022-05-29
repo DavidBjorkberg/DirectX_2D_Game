@@ -6,11 +6,12 @@ using namespace DirectX::SimpleMath;
 class HealthComponent : public Component
 {
 public:
+	HealthComponent();
 	virtual void Initialize(void* owner) override;
 	void TakeDamage(int amount);
 	HealthComponent(int maxHealth);
-	bool TookDamageTrigger;
+	bool tookDamageTrigger;
 private:
-	int Health;
-	int MaxHealth;
+	int health;
+	int maxHealth;
 };

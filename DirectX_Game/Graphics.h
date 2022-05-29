@@ -30,6 +30,9 @@ public:
 	IDXGISwapChain* swapChain;
 	ID3D11Buffer* squareIndexBuffer;
 
+	Graphics();
+	Graphics(HWND handle);
+	~Graphics();
 	bool Init();
 	Drawable* CreateDrawable(std::vector<Vertex> vertices,ShaderClass* shaders,UINT vertexSize
 		,ID3D11Buffer* indexBuffer,vector<ID3D11Buffer*> vsConstantBuffers = vector<ID3D11Buffer*>()
@@ -39,9 +42,6 @@ public:
 	void CreateConstantBuffer(ID3D11Buffer** buffer, UINT size); 
 	void Update();
 	void MapToBuffer(ID3D11Buffer* buffer, const void* data, size_t size);
-	Graphics(HWND handle);
-	Graphics();
-	~Graphics();
 private:
 	void CreateSquareIndexBuffer();
 	void InitSampler();

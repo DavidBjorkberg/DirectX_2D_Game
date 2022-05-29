@@ -3,6 +3,8 @@
 class Component
 {
 public:
+	Component();
+	virtual ~Component();
 	virtual void Update(float deltaTime);
 	virtual void LateUpdate(float deltaTime);
 	virtual void Initialize(void* owner);

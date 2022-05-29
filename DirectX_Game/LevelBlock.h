@@ -13,13 +13,8 @@ public:
 		float width;
 		float height;
 	};
-	ID3D11Buffer* dimensionsBuffer;
-	BoxCollider* collider;
-	Texture texture;
-	Vector2 position;
-	Dimensions dimensions;
 	LevelBlock();
 	LevelBlock(Vector2 pos, float width, float height, Graphics* graphics);
-private:
-
+	Vector2 position;
+	Dimensions dimensions;
 };

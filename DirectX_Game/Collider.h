@@ -6,14 +6,14 @@ using namespace DirectX::SimpleMath;
 class Collider : public Component
 {
 public:
-	Vector2 bottomLeftPos;
-	float width;
-	float height;
-	Physics::Layer layer;
+	Collider(Physics::Layer layer);
+	Collider();
 	virtual bool IsColliding(Collider* other);
 	virtual bool IsCollidingAfterMove(Collider* other, Vector2 moveVec);
 	virtual void Move(Vector2 moveVec);
 	virtual void Initialize(void* owner)override;
-	Collider(Physics::Layer layer);
-	Collider();
+	Vector2 bottomLeftPos;
+	float width;
+	float height;
+	Physics::Layer layer;
 };

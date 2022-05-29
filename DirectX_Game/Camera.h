@@ -8,13 +8,13 @@ using namespace DirectX::SimpleMath;
 class Camera
 {
 public:
-	void UpdateViewMatrix();
-	ID3D11Buffer* GetViewProjBuffer();
-	void SetFollowTarget(Entity* gameObjectToFollow);
 	Camera(Graphics* graphics);
+	virtual ~Camera();
+	void UpdateViewMatrix();
+	void SetFollowTarget(Entity* gameObjectToFollow);
 	void Update();
+	ID3D11Buffer* GetViewProjBuffer();
 private:
-	float test = 0;
 	Vector3 position;
 	Vector3 lookTarget;
 	Matrix viewMatrix;

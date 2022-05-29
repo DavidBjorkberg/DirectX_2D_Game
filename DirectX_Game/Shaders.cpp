@@ -1,5 +1,9 @@
 #include "Shaders.h"
 
+ShaderClass::ShaderClass()
+{
+}
+
 bool ShaderClass::CreatePS(ID3D11Device* device, LPCWSTR fileName)
 {
 	return this->ps.Initialize(device, fileName);
@@ -8,6 +12,9 @@ bool ShaderClass::CreatePS(ID3D11Device* device, LPCWSTR fileName)
 bool ShaderClass::CreateVS(ID3D11Device* device, LPCWSTR shaderpath, D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements)
 {
 	return this->vs.Initialize(device, shaderpath, layoutDesc, numElements);
+}
+VertexShader::VertexShader()
+{
 }
 //VERTEX SHADER
 bool VertexShader::Initialize(ID3D11Device* device, LPCWSTR shaderpath, D3D11_INPUT_ELEMENT_DESC* layoutDesc, UINT numElements)
@@ -64,6 +71,9 @@ ID3D10Blob* VertexShader::GetBuffer()
 ID3D11InputLayout* VertexShader::GetInputLayout()
 {
 	return this->inputLayout;
+}
+PixelShader::PixelShader()
+{
 }
 //PIXEL SHADER
 bool PixelShader::Initialize(ID3D11Device* device, LPCWSTR shaderpath)

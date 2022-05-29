@@ -42,6 +42,8 @@ Game::Game(float* deltaTime)
 
 Game::~Game()
 {
+	delete mainCamera;
+	delete input;
 }
 
 void Game::CreateBackground()

@@ -100,3 +100,12 @@ void SpriteRenderer::SetAnimationSprite(Texture* sprite)
 {
 	thisDrawable->psResourceViews[1] = sprite->GetResourceView();
 }
+
+SpriteRenderer::~SpriteRenderer()
+{
+	delete this->thisDrawable;
+	delete this->animationBuffer;
+	delete this->positionBuffer;
+	delete this->rotationBuffer;
+	delete this->flipBuffer;
+}

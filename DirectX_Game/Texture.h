@@ -7,13 +7,12 @@
 class Texture
 {
 public:
-	
 	Texture();
+	virtual ~Texture();
 	void Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, std::string fileName);
 	ID3D11ShaderResourceView* GetResourceView();
 
 private:
-	//ID3D11Texture2D* texture;
 	ID3D11Resource* texture;
 	ID3D11ShaderResourceView* textureView;
 };

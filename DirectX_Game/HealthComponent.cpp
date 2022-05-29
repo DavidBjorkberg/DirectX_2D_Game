@@ -1,5 +1,9 @@
 #include "HealthComponent.h"
 
+HealthComponent::HealthComponent()
+{
+}
+
 void HealthComponent::Initialize(void* owner)
 {
 	Component::Initialize(owner);
@@ -7,12 +11,12 @@ void HealthComponent::Initialize(void* owner)
 
 void HealthComponent::TakeDamage(int amount)
 {
-	this->Health -= amount;
-	TookDamageTrigger = true;
+	this->health -= amount;
+	tookDamageTrigger = true;
 }
 
 HealthComponent::HealthComponent(int maxHealth)
 {
-	this->MaxHealth = maxHealth;
-	this->Health = maxHealth;
+	this->maxHealth = maxHealth;
+	this->health = maxHealth;
 }
