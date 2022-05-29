@@ -32,7 +32,6 @@ void Camera::Update()
 
 Camera::~Camera()
 {
-	delete this->viewProjBuffer;
 }
 
 ID3D11Buffer* Camera::GetViewProjBuffer()

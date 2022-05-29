@@ -14,5 +14,5 @@ public:
 	std::vector<Animation*> Animations;
 private:
 	Animation* CurrentPlayingAnimation;
-	SpriteRenderer* SpriteRenderer;
+	SpriteRenderer* spriteRenderer;
 };

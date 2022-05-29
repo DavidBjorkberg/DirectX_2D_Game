@@ -7,7 +7,7 @@ void PlayerAttack::Initialize(void* owner)
 {
 	Component::Initialize(owner);
 	this->transform = static_cast<Entity*>(owner)->GetComponent<Transform>();
-	this->playerMovement = static_cast<Entity*>(owner)->GetComponent<PlayerMovement2>();
+	this->playerMovement = static_cast<Entity*>(owner)->GetComponent<PlayerMovement>();
 
 }
 

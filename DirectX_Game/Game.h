@@ -20,8 +20,8 @@ private:
 	Texture emptyHeartsTexture;
 	ShaderClass backgroundShaders;
 	ShaderClass healthUIShaders;
-	LevelManager levelManager;
-	Graphics graphics;
+	LevelManager* levelManager;
+	Graphics* graphics;
 	CollisionHandler collisionHandler;
 	static Camera* mainCamera;
 	static Input* input;

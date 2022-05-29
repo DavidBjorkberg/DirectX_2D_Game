@@ -3,7 +3,7 @@
 #include "SpriteRenderer.h"
 #include "Rigidbody.h"
 #include "Component.h"
-#include "PlayerMovement2.h"
+#include "PlayerMovement.h"
 #include "Physics.h"
 #include "AnimationController.h"
 #include "EnemyMovement.h"
@@ -115,7 +115,7 @@ void LevelManager::CreatePlayer()
 	playerComponents->push_back(new PlayerAttack());
 	playerComponents->push_back(new HealthComponent(5));
 	Rigidbody* rigidBody = new Rigidbody();
-	PlayerMovement2* playerMovement = new PlayerMovement2();
+	PlayerMovement* playerMovement = new PlayerMovement();
 	AnimationController* animationController = new AnimationController;
 	playerComponents->push_back(rigidBody);
 	playerComponents->push_back(animationController);

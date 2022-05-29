@@ -9,12 +9,12 @@ Input* Game::input;
 void Game::Initialize(HWND handle)
 {
 	CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
-	graphics = Graphics(handle);
-	mainCamera = new Camera(&graphics);
+	graphics = new Graphics(handle);
+	mainCamera = new Camera(graphics);
 	Physics::InitializeLayers();
 	CreateBackground();
-	levelManager = LevelManager(&graphics);
-	mainCamera->SetFollowTarget(levelManager.playerGO);
+	levelManager = new LevelManager(graphics);
+	mainCamera->SetFollowTarget(levelManager->playerGO);
 	CreateHealthUI();
 	this->input = new Input();
 }
@@ -22,9 +22,9 @@ void Game::Initialize(HWND handle)
 void Game::Update()
 {
 	Input::Update();
-	levelManager.UpdateComponents(*deltaTime);
+	levelManager->UpdateComponents(*deltaTime);
 	mainCamera->Update();
-	graphics.Update();
+	graphics->Update();
 }
 Camera* Game::GetMainCamera()
 {
@@ -49,9 +49,9 @@ Game::~Game()
 void Game::CreateBackground()
 {
 	std::vector<Component*>* playerComponents = new vector<Component*>();
-	playerComponents->push_back(new SpriteRenderer("Textures/Background.png", 2, 2, &graphics, Vector4::Zero, "BGVertex.hlsl", "BGPixel.hlsl"));
+	playerComponents->push_back(new SpriteRenderer("Textures/Background.png", 2, 2, graphics, Vector4::Zero, "BGVertex.hlsl", "BGPixel.hlsl"));
 
-	levelManager.AddGameObject(new Entity(playerComponents));
+	levelManager->AddGameObject(new Entity(playerComponents));
 }
 
 void Game::CreateHealthUI() //TODO: Reimplement with entity component
