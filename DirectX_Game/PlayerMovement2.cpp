@@ -28,12 +28,14 @@ void PlayerMovement2::HandleInput(float deltaTime)
 	if (Input::KeyDown(DirectX::Keyboard::A))
 	{
 		moveDirection -= Vector2(1, 0);
+		facingDir = Vector2(-1, 0);
 		spriteRenderer->SetFlipX(true);
 		running = true;
 	}
 	if (Input::KeyDown(DirectX::Keyboard::D))
 	{
 		moveDirection += Vector2(1, 0);
+		facingDir = Vector2(1, 0);
 		spriteRenderer->SetFlipX(false);
 		running = true;
 	}
@@ -43,7 +45,7 @@ void PlayerMovement2::HandleInput(float deltaTime)
 	}
 	if (Input::KeyPressed(DirectX::Keyboard::Space) && IsGrounded())
 	{
-		rigidbody->AddVelocity(Vector2(0, 0.005f), Rigidbody::VelocityMode::Set);
+		rigidbody->AddVelocity(Vector2(0, 0.01f), Rigidbody::VelocityMode::Set);
 		jumpAnimTrigger = true;
 	}
 }

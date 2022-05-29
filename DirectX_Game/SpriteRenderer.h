@@ -16,6 +16,8 @@ public:
 	SpriteRenderer();
 	void SetFlipX(bool flipX);
 	void SetFlipY(bool flipY); 
+	bool GetFlipX();
+	bool GetFlipY();
 	void SetAnimationSprite(Texture* sprite);
 	ID3D11Buffer* animationBuffer;
 private:

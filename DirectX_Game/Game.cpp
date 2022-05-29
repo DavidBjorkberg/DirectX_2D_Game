@@ -52,7 +52,7 @@ void Game::CreateBackground()
 	levelManager.AddGameObject(new Entity(playerComponents));
 }
 
-void Game::CreateHealthUI()
+void Game::CreateHealthUI() //TODO: Reimplement with entity component
 {
 	//fullHeartsTexture.Initialize(graphics.device, graphics.deviceContext, "Textures/Hearts.png");
 	//emptyHeartsTexture.Initialize(graphics.device, graphics.deviceContext, "Textures/EmptyHearts.png");

@@ -6,6 +6,7 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void LateUpdate(float deltaTime);
 	virtual void Initialize(void* owner);
+	void* GetOwner();
 protected:
 	void* owner;
 };

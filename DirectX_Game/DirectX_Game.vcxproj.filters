@@ -33,12 +33,6 @@
     <FxCompile Include="PlayerPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="EnemyVertex.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
-    <FxCompile Include="EnemyPixel.hlsl">
-      <Filter>HLSL</Filter>
-    </FxCompile>
     <FxCompile Include="BGPixel.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
@@ -140,6 +134,18 @@
     <ClInclude Include="Physics.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyMovement.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthComponent.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAttack.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyAttack.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -224,6 +230,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Physics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMovement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAttack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAttack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

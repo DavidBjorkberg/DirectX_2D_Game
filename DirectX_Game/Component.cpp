@@ -12,3 +12,8 @@ void Component::Initialize(void* owner)
 	this->owner = owner;
 
 }
+
+void* Component::GetOwner()
+{
+	return owner;
+}

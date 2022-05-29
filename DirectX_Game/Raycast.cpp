@@ -1,5 +1,5 @@
 #include "Raycast.h"
-bool RaycastUtility::Raycast(Vector2 origin, Vector2 direction, float maxDistance, int ignoreLayerMask)
+Entity* RaycastUtility::Raycast(Vector2 origin, Vector2 direction, float maxDistance, int ignoreLayerMask)
 {
 	Line ray = Line(origin, origin + direction * maxDistance);
 
@@ -9,22 +9,22 @@ bool RaycastUtility::Raycast(Vector2 origin, Vector2 direction, float maxDistanc
 
 		if (LineIntersectRectangle(ray, collider->bottomLeftPos, collider->width, collider->height))
 		{
-			return true;
+			return static_cast<Entity*>(collider->GetOwner());
 		}
 	}
-	return false;
+	return nullptr;
 }
 
-bool RaycastUtility::LineIntersectRectangle(Line ray, Vector2 rectPos, float rectWidth, float rectHeight)
+bool RaycastUtility::LineIntersectRectangle(Line ray, Vector2 bottomLeftPos, float rectWidth, float rectHeight)
 {
 	Line linesInRect[4];
-	linesInRect[0] = Line(rectPos + (Vector2(-rectWidth, -rectHeight) / 2), rectPos + (Vector2(-rectWidth, rectHeight) / 2));
-	linesInRect[1] = Line(rectPos + (Vector2(-rectWidth, -rectHeight) / 2), rectPos + (Vector2(rectWidth, -rectHeight) / 2));
-	linesInRect[2] = Line(rectPos + (Vector2(-rectWidth, rectHeight) / 2), rectPos + (Vector2(rectWidth, rectHeight) / 2));
-	linesInRect[3] = Line(rectPos + (Vector2(rectWidth, -rectHeight) / 2), rectPos + (Vector2(rectWidth, rectHeight) / 2));
+	linesInRect[0] = Line(bottomLeftPos, bottomLeftPos + Vector2(0, rectHeight));
+	linesInRect[1] = Line(bottomLeftPos, bottomLeftPos + Vector2(rectWidth,0));
+	linesInRect[2] = Line(bottomLeftPos + Vector2(rectWidth, rectHeight), bottomLeftPos + Vector2(rectWidth, 0));
+	linesInRect[3] = Line(bottomLeftPos + Vector2(rectWidth, rectHeight), bottomLeftPos + Vector2(0, rectHeight));
 	for (int i = 0; i < 4; i++)
 	{
-		if (LineIntersectLine(linesInRect[i], ray))
+		if(Intersect(linesInRect[i],ray))
 		{
 			return true;
 		}
@@ -32,59 +32,13 @@ bool RaycastUtility::LineIntersectRectangle(Line ray, Vector2 rectPos, float rec
 	return false;
 }
 
-bool RaycastUtility::LineIntersectLine(Line line1, Line line2)
-{
-	int o1 = GetOrientation(line1.start, line1.end, line2.start);
-	int o2 = GetOrientation(line1.start, line1.end, line2.end);
-	int o3 = GetOrientation(line2.start, line2.end, line1.start);
-	int o4 = GetOrientation(line2.start, line2.end, line1.end);
+bool RaycastUtility::Intersect(Line line1, Line line2) {
+	float x1 = line1.start.x, x2 = line1.end.x, x3 = line2.start.x, x4 = line2.end.x;
+	float y1 = line1.start.y, y2 = line1.end.y, y3 = line2.start.y, y4 = line2.end.y;
 
-	if (o1 != o2 && o3 != o4)
-	{
-		return true;
-	}
-	//Special cases
-	if (o1 == 0 && OnSegment(line1.start, line2.start, line1.end))
-	{
-		return true;
-	}
-	if (o2 == 0 && OnSegment(line1.start, line2.end, line1.end))
-	{
-		return true;
-	}
-	if (o3 == 0 && OnSegment(line2.start, line1.start, line2.end))
-	{
-		return true;
-	}
-	if (o4 == 0 && OnSegment(line2.start, line1.end, line2.end))
-	{
-		return true;
-	}
-	return false;
-}
+	float d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 
-bool RaycastUtility::OnSegment(Vector2 p, Vector2 q, Vector2 r)
-{
-	if (q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
-		q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-//Returns orientation of the three points: 0 -> Collinear, 1 -> clockwise, 2 -> counterclockwise
-int RaycastUtility::GetOrientation(Vector2 p, Vector2 q, Vector2 r)
-{
-	int val = (q.y - p.y) * (r.x - q.x) -
-		(q.x - p.x) * (r.y - q.y);
-
-	if (val == 0)
-	{
-		return 0;  // collinear
-	}
-
-	return val > 0 ? 1 : 2; // clock or counterclockwise
+	return d != 0;
 
 }
+

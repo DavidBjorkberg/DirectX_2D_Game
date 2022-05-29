@@ -12,7 +12,7 @@ class LevelManager
 public:
 	std::vector<LevelBlock*> level;
 	std::vector<Enemy*> enemies;
-	Entity* playerGO;
+	Entity* playerGO = nullptr;
 	void UpdateComponents(float deltaTime);
 	static void AddGameObject(Entity* gameObject);
 	LevelManager();
@@ -22,5 +22,6 @@ private:
 	LevelReader* levelReader;
 	static std::vector<Entity*> gameObjects;
 	void UpdateEnemies(float deltaTime);
+	void CreateEnemy(Vector2 position, string type);
 	void CreatePlayer();
 };

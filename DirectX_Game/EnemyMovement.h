@@ -3,20 +3,15 @@
 #include "Transform.h"
 #include "Rigidbody.h"
 #include "SpriteRenderer.h"
-class PlayerMovement2 : public Component
+class EnemyMovement : public Component
 {
 public:
-	PlayerMovement2();
+	EnemyMovement();
 	void Initialize(void* owner)override;
 	void Update(float deltaTime)override;
-	void HandleInput(float deltaTime);
-	bool IsGrounded();
-	bool running; 
-	bool jumpAnimTrigger;
-	Vector2 facingDir;
+	Vector2 walkingDirection = Vector2(1, 0);
 private:
 	Transform* transform;
-	Rigidbody* rigidbody;
 	SpriteRenderer* spriteRenderer;
 	float movementSpeed = 5;
 };

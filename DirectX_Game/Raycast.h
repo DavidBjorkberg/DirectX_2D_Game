@@ -1,6 +1,6 @@
 #pragma once
 #include "CollisionHandler.h"
-
+#include "Entity.h"
 class Line
 {
 public:
@@ -16,14 +16,12 @@ public:
 
 	}
 };
-class RaycastUtility //TODO: Change name
+class RaycastUtility 
 {
 public:
-	static bool Raycast(Vector2 origin, Vector2 direction, float maxDistance, int ignoreLayerMask); 
+	static Entity* Raycast(Vector2 origin, Vector2 direction, float maxDistance, int ignoreLayerMask = 0); 
 
 private:
 	static bool LineIntersectRectangle(Line ray, Vector2 rectPos, float rectWidth, float rectHeight);
-	static bool LineIntersectLine(Line line1, Line line2);
-	static bool OnSegment(Vector2 p, Vector2 q, Vector2 r);
-	static int GetOrientation(Vector2 p, Vector2 q, Vector2 r);
+	static bool Intersect(Line line1, Line line2);
 };

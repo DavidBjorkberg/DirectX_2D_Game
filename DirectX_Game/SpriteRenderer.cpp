@@ -86,6 +86,16 @@ void SpriteRenderer::SetFlipY(bool flipY)
 	this->graphics->MapToBuffer(flipBuffer, &FlippedXY, sizeof(Vector2));
 }
 
+bool SpriteRenderer::GetFlipX()
+{
+	return this->FlippedXY.x;
+}
+
+bool SpriteRenderer::GetFlipY()
+{
+	return this->FlippedXY.y;
+}
+
 void SpriteRenderer::SetAnimationSprite(Texture* sprite)
 {
 	thisDrawable->psResourceViews[1] = sprite->GetResourceView();
